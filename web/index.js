@@ -1,11 +1,26 @@
 (() => {
   'use strict';
 
+  const LOGS = false;
+
   async function start({
     username,
     roomId
   }) {
     try {
+      // Get ice servers from server
+      const iceServers = await api({
+        request: 'getIceServers',
+        response: 'iceServersResponse'
+      });
+
+      // Peer config for simple-peer
+      const peerConfig = {
+        // Hack to specify correct ice servers
+        iceServers: [iceServers[0], iceServers[3]]
+      };
+
+      // HTML elements
 		  const localVideoContainer = document.getElementById('localVideo');
 		  const remoteVideoContainer = document.getElementById('remoteVideos');
 
@@ -15,17 +30,7 @@
       // Current room
       let currentRoom = null;
 
-      // creates a DOM element to allow the user to see/join rooms
-      function createRoomElement(id) {
-        const element = document.createElement('div');
-        element.className = 'el';
-        element.id = id;
-        element.innerHTML = id;
-        roomContainer.appendChild(element);
-        return element;
-      }
-
-      // creates a video element, sets a mediastream as it's source, and appends it to the DOM
+      // Creates a video element, sets a mediastream as it's source, and appends it to the DOM
       function createVideoElement(container, mediaStream, muted=false) {
         const videoElement = document.createElement('video');
         videoElement.autoplay = true;
@@ -35,28 +40,42 @@
         return videoElement;
       }
 
+      // Registers new peer with localStream
       function onPeer(peer, localStream) {
+        // Add local stream to peer
         peer.addStream(localStream);
+
+        // On stream
         peer.on('stream', remoteStream => {
+          // Create video element and append to remote video container
           const videoElement = createVideoElement(remoteVideoContainer, remoteStream);
+
+          // On close
           peer.on('close', () => {
+            // Remove video element from remote video container
             remoteVideoContainer.removeChild(videoElement);
           });
         });
       }
 
-      // connects to a peer and handles media streams
+      // Connects to a peer and handles media streams
       async function connectToPeer(peerId, localStream) {
-        console.log('connecting to peer', peerId);
-        const { peer } = await signalClient.connect(peerId, currentRoom); // connect to the peer
-        console.log('connected to peer', peerId);
+        if (LOGS) console.log('connecting to peer', peerId);
+
+        // Connect to the peer
+        const { peer } = await signalClient.connect(peerId, currentRoom, peerConfig);
+
+        if (LOGS) console.log('connected to peer', peerId);
+
+        // Register peer
         onPeer(peer, localStream);
       }
 
+      // Join room
       function joinRoom(roomId, localStream) {
-        console.log('join', roomId);
+        if (LOGS) console.log('join', roomId);
 
-        // disconnect from all peers in old room
+        // Disconnect from all peers in old room
         if (currentRoom) {
           if (currentRoom !== roomId) {
             signalClient.peers().forEach(peer => {
@@ -67,31 +86,42 @@
           }
         }
 
-        console.log('requesting to join', roomId);
+        if (LOGS) console.log('requesting to join', roomId);
+
+        // Discover room
         signalClient.discover(roomId);
 
-        // get the peers in this room
+        // Get the peers in this room
         function onRoomPeers(discoveryData) {
-          console.log('onRoomPeers', discoveryData);
+          if (LOGS) console.log('onRoomPeers', discoveryData);
+
+          // Discovery data is for from correct room
           if (discoveryData.roomResponse == roomId) {
-            console.log(discoveryData);
+            if (LOGS) console.log(discoveryData);
+
+            // Remove onRoomPeers from discover listener
             signalClient.removeListener('discover', onRoomPeers);
-            // don't connect to own peer
-            discoveryData.peers.forEach(peerId => connectToPeer(peerId, localStream)); // connect to all peers in new room
+
+            // Connect to all peers in new room
+            discoveryData.peers.forEach(peerId => connectToPeer(peerId, localStream));
           }
         }
 
+        // Register onRoomPeers on discover
         signalClient.addListener('discover', onRoomPeers);
       }
 
       navigator.getUserMedia({ audio: true, video: true }, (localStream) => {
-        createVideoElement(localVideoContainer, localStream, true); // display local video
+        // Display local video
+        createVideoElement(localVideoContainer, localStream, true);
 
+        // Accept request on request and register peer
         signalClient.on('request', async (request) => {
           const { peer } = await request.accept();
           onPeer(peer, localStream);
         });
 
+        // Join room
         joinRoom(roomId, localStream);
       }, () => alert('No webcam access!'));
     }

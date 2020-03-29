@@ -17,14 +17,12 @@ const smsClient = require('twilio')(process.env.twilioAccountSid, process.env.tw
 
 // Internal utility imports
 const {
-  SERVER_PORT
+  SERVER_PORT,
+  LOGS
 } = require('./utils/constants');
 
 // Resolver imports
-const relayPeerSignalResolver = require('./resolvers/relayPeerSignalResolver');
 const iceServersResolver = require('./resolvers/iceServersResolver');
-const joinRoomResolver = require('./resolvers/joinRoomResolver');
-const leaveRoomResolver = require('./resolvers/leaveRoomResolver');
 
 // Port to run server on
 const PORT = process.env.PORT || SERVER_PORT;
@@ -35,55 +33,10 @@ app.use(cors());
 // Serve web on /static
 app.use('/static', express.static(`${__dirname}/../web`));
 
-// Socket authentication middleware
-/*
-io.use((socket, next) => {
-  socket.user = (socket.handshake.query.token && socket.handshake.query.token !== 'null')
-    ? getPayload(socket.handshake.query.token)
-    : null;
-
-  next();
-});
-*/
-
-// Rooms object
-// const rooms = {};
-
-/*
-  start conf:
-    create new roomId
-    listen for incoming peers on roomId
-
-  rooms = {
-    'roomid': [
-      part1,
-      part2
-    ]
-  }
-*/
-
-/*
-const signalServer = require('simple-signal-server')(io)
-const allIDs = new Set()
-
-signalServer.on('discover', (request) => {
-  const clientID = request.socket.id // you can use any kind of identity, here we use socket.id
-  allIDs.add(clientID) // keep track of all connected peers
-  request.discover(clientID, Array.from(allIDs)) // respond with id and list of other peers
-})
-
-signalServer.on('disconnect', (socket) => {
-  const clientID = socket.id
-  allIDs.delete(clientID)
-})
-
-signalServer.on('request', (request) => {
-  request.forward() // forward all requests to connect
-})
-*/
-
+// Rooms
 const rooms = {};
 
+// Peer discovery
 signalServer.on('discover', request => {
   const roomId = request.discoveryData;
   const peerId = request.socket.id;
@@ -100,9 +53,10 @@ signalServer.on('discover', request => {
     peers: Array.from(rooms[roomId]).filter(currentPeerId => currentPeerId !== peerId)
   });
 
-  console.log(peerId, 'joined', roomId);
+  if(LOGS) console.log(peerId, 'joined', roomId);
 });
 
+// Peer disconnection
 signalServer.on('disconnect', socket => {
   const peerId = socket.id;
   const roomId = socket.roomId;
@@ -110,10 +64,11 @@ signalServer.on('disconnect', socket => {
   if (roomId in rooms) {
     rooms[roomId].delete(peerId);
 
-    console.log(peerId, 'left', roomId);
+    if (LOGS) console.log(peerId, 'left', roomId);
   }
 });
 
+// Relay peer requests
 signalServer.on('request', request => {
   request.forward();
 })
@@ -127,10 +82,7 @@ io.on('connection', (socket) => {
   const generateResolver = (name, fn) => socket.on(name, (args) => fn({ ...args, ...context }));
 
   // Resolvers
-  generateResolver('relayPeerSignal', relayPeerSignalResolver);
   generateResolver('getIceServers', iceServersResolver);
-  generateResolver('joinRoom', joinRoomResolver);
-  generateResolver('leaveRoom', leaveRoomResolver);
 });
 
 // Serve web/index.html on path '/' and '/index.html'

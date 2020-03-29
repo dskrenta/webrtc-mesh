@@ -5,14 +5,6 @@ async function iceServersResolver({
   socket
 }) {
   try {
-    // Check if socket is authenticated
-    /*
-    if (!socket.user) {
-      console.error('Socket is not authenticated');
-      return;
-    }
-    */
-
     const ntsData = await smsClient.tokens.create();
     socket.emit('iceServersResponse', ntsData.iceServers);
   }
