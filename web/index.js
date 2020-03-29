@@ -6,97 +6,99 @@
     roomId
   }) {
     try {
-      const joinRoomRes = await api({
-        request: 'joinRoom',
-        data: {
-          username,
-          roomId
-        },
-        response: 'joinRoomResponse'
-      });
+		  const localVideoContainer = document.getElementById('localVideo');
+		  const remoteVideoContainer = document.getElementById('remoteVideos');
 
-      console.log('joinRoomRes', joinRoomRes);
+      // Signal client
+      const signalClient = new SimpleSignalClient(window.socket);
 
-      // Peer config for simple-peer
-      const peerConfig = {
-        // Hack to specify correct ice servers
-        iceServers: [joinRoomRes.iceServers[0], joinRoomRes.iceServers[3]]
-      };
+      // Current room
+      let currentRoom = null;
 
-      const peerId = randomId();
+      // creates a DOM element to allow the user to see/join rooms
+      function createRoomElement(id) {
+        const element = document.createElement('div');
+        element.className = 'el';
+        element.id = id;
+        element.innerHTML = id;
+        roomContainer.appendChild(element);
+        return element;
+      }
 
-      console.log('peerId', peerId);
+      // creates a video element, sets a mediastream as it's source, and appends it to the DOM
+      function createVideoElement(container, mediaStream, muted=false) {
+        const videoElement = document.createElement('video');
+        videoElement.autoplay = true;
+        videoElement.srcObject = mediaStream;
+        videoElement.muted = muted;
+        container.appendChild(videoElement);
+        return videoElement;
+      }
 
-      const internalPeers = {};
-
-      // Get video stream from browser
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true
-      });
-
-      window.socket.on(`peerSignal:${roomId}`, ({
-        originatingPeerId,
-        roomId,
-        signal,
-        initiator
-      }) => {
-        console.log('signal from', originatingPeerId, 'in room', roomId, signal);
-
-        if (!(originatingPeerId in internalPeers)) {
-          internalPeers[originatingPeerId] = new SimplePeer({
-            initiator,
-            stream,
-            trickle: false,
-            config: peerConfig
+      function onPeer(peer, localStream) {
+        peer.addStream(localStream);
+        peer.on('stream', remoteStream => {
+          const videoElement = createVideoElement(remoteVideoContainer, remoteStream);
+          peer.on('close', () => {
+            remoteVideoContainer.removeChild(videoElement);
           });
+        });
+      }
 
-          // May need to pass both originating and actual peerId
-          internalPeers[originatingPeerId].on('signal', signal => {
-            window.socket.emit('relayPeerSignal', {
-              originatingPeerId: peerId,
-              roomId,
-              signal,
-              initiator: false
+      // connects to a peer and handles media streams
+      async function connectToPeer(peerId, localStream) {
+        console.log('connecting to peer', peerId);
+        const { peer } = await signalClient.connect(peerId, currentRoom); // connect to the peer
+        console.log('connected to peer', peerId);
+        onPeer(peer, localStream);
+      }
+
+      function joinRoom(roomId, localStream) {
+        console.log('join', roomId);
+
+        // disconnect from all peers in old room
+        if (currentRoom) {
+          if (currentRoom !== roomId) {
+            signalClient.peers().forEach(peer => {
+              peer.destroy();
             });
-          });
-
-          internalPeers[originatingPeerId].on('stream', stream => {
-            console.log('stream from', originatingPeerId, stream);
-          });
+          } else {
+            return;
+          }
         }
 
-        console.log('peers', internalPeers);
+        console.log('requesting to join', roomId);
+        signalClient.discover(roomId);
 
-        console.log('signaling', 'peerId', peerId, 'originatingPeerId', originatingPeerId);
-        internalPeers[originatingPeerId].signal(signal);
-      });
+        // get the peers in this room
+        function onRoomPeers(discoveryData) {
+          console.log('onRoomPeers', discoveryData);
+          if (discoveryData.roomResponse == roomId) {
+            console.log(discoveryData);
+            signalClient.removeListener('discover', onRoomPeers);
+            // don't connect to own peer
+            discoveryData.peers.forEach(peerId => connectToPeer(peerId, localStream)); // connect to all peers in new room
+          }
+        }
 
-      internalPeers[peerId] = new SimplePeer({
-        initiator: joinRoomRes.initiator,
-        stream,
-        trickle: false,
-        config: peerConfig
-      });
+        signalClient.addListener('discover', onRoomPeers);
+      }
 
-      internalPeers[peerId].on('signal', signal => {
-        window.socket.emit('relayPeerSignal', {
-          originatingPeerId: peerId,
-          roomId,
-          signal,
-          initiator: joinRoomRes.initiator
+      navigator.getUserMedia({ audio: true, video: true }, (localStream) => {
+        createVideoElement(localVideoContainer, localStream, true); // display local video
+
+        signalClient.on('request', async (request) => {
+          const { peer } = await request.accept();
+          onPeer(peer, localStream);
         });
-      });
 
-      internalPeers[peerId].on('stream', stream => {
-        console.log('stream from', peerId, stream);
-      });
+        joinRoom(roomId, localStream);
+      }, () => alert('No webcam access!'));
     }
     catch (error) {
-      console.error(error);
+      console.error('start error', error);
     }
   }
-
 
   async function main() {
     try {

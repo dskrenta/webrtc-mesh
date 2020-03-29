@@ -11,6 +11,7 @@ const cors = require('cors');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+const signalServer = require('simple-signal-server')(io);
 const path = require('path');
 const smsClient = require('twilio')(process.env.twilioAccountSid, process.env.twilioAuthToken);
 
@@ -46,7 +47,7 @@ io.use((socket, next) => {
 */
 
 // Rooms object
-const rooms = {};
+// const rooms = {};
 
 /*
   start conf:
@@ -60,6 +61,62 @@ const rooms = {};
     ]
   }
 */
+
+/*
+const signalServer = require('simple-signal-server')(io)
+const allIDs = new Set()
+
+signalServer.on('discover', (request) => {
+  const clientID = request.socket.id // you can use any kind of identity, here we use socket.id
+  allIDs.add(clientID) // keep track of all connected peers
+  request.discover(clientID, Array.from(allIDs)) // respond with id and list of other peers
+})
+
+signalServer.on('disconnect', (socket) => {
+  const clientID = socket.id
+  allIDs.delete(clientID)
+})
+
+signalServer.on('request', (request) => {
+  request.forward() // forward all requests to connect
+})
+*/
+
+const rooms = {};
+
+signalServer.on('discover', request => {
+  const roomId = request.discoveryData;
+  const peerId = request.socket.id;
+
+  if (!(roomId in rooms)) {
+    rooms[roomId] = new Set();
+  }
+
+  rooms[roomId].add(peerId);
+  request.socket.roomId = roomId;
+
+  request.discover(peerId, {
+    roomResponse: roomId,
+    peers: Array.from(rooms[roomId]).filter(currentPeerId => currentPeerId !== peerId)
+  });
+
+  console.log(peerId, 'joined', roomId);
+});
+
+signalServer.on('disconnect', socket => {
+  const peerId = socket.id;
+  const roomId = socket.roomId;
+
+  if (roomId in rooms) {
+    rooms[roomId].delete(peerId);
+
+    console.log(peerId, 'left', roomId);
+  }
+});
+
+signalServer.on('request', request => {
+  request.forward();
+})
 
 // On socket connection
 io.on('connection', (socket) => {
