@@ -42,8 +42,8 @@
 
         if (!(originatingPeerId in internalPeers)) {
           internalPeers[originatingPeerId] = new SimplePeer({
-            initiator: false,
-            // stream,
+            initiator: true,
+            stream,
             trickle: false,
             config: peerConfig
           });
