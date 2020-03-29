@@ -22,6 +22,8 @@ const {
 // Resolver imports
 const relayPeerSignalResolver = require('./resolvers/relayPeerSignalResolver');
 const iceServersResolver = require('./resolvers/iceServersResolver');
+const joinRoomResolver = require('./resolvers/joinRoomResolver');
+const leaveRoomResolver = require('./resolvers/leaveRoomResolver');
 
 // Port to run server on
 const PORT = process.env.PORT || SERVER_PORT;
@@ -44,7 +46,7 @@ io.use((socket, next) => {
 */
 
 // Rooms object
-// const rooms = {};
+const rooms = {};
 
 /*
   start conf:
@@ -62,7 +64,7 @@ io.use((socket, next) => {
 // On socket connection
 io.on('connection', (socket) => {
   // Context for resolvers
-  const context = { socket, io, smsClient };
+  const context = { socket, io, smsClient, rooms };
 
   // Utility for generating socket resolvers
   const generateResolver = (name, fn) => socket.on(name, (args) => fn({ ...args, ...context }));
@@ -70,6 +72,8 @@ io.on('connection', (socket) => {
   // Resolvers
   generateResolver('relayPeerSignal', relayPeerSignalResolver);
   generateResolver('getIceServers', iceServersResolver);
+  generateResolver('joinRoom', joinRoomResolver);
+  generateResolver('leaveRoom', leaveRoomResolver);
 });
 
 // Serve web/index.html on path '/' and '/index.html'

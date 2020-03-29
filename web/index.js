@@ -2,11 +2,26 @@
   'use strict';
 
   async function start({
-    // username,
+    username,
     roomId
   }) {
     try {
-      // get ice servers
+      const joinRoomRes = await api({
+        request: 'joinRoom',
+        data: {
+          username,
+          roomId
+        },
+        response: 'joinRoomResponse'
+      });
+
+      console.log('joinRoomRes', joinRoomRes);
+
+      // Peer config for simple-peer
+      const peerConfig = {
+        // Hack to specify correct ice servers
+        iceServers: [joinRoomRes.iceServers[0], joinRoomRes.iceServers[3]]
+      };
 
       const peerId = randomId();
 
@@ -23,28 +38,50 @@
         roomId,
         signal
       }) => {
-        if (peerId !== originatingPeerId) {
-          if (originatingPeerId in internalPeers) {
-            internalPeers[originatingPeerId].signal(signal);
-          }
-          else {
-            internalPeers[originatingPeerId] = new SimplePeer({
-              initiator: false,
-              // stream,
-              trickle: false,
-              // config: peerConfig
-            });
+        console.log('signal from', originatingPeerId, 'in room', roomId, signal);
 
-            // May need to pass both originating and actual peerId
-            internalPeers[originatingPeerId].on('signal', signal => {
-              window.socket.emit('relayPeerSignal', {
-                originatingPeerId,
-                roomId,
-                signal
-              });
-            })
-          }
+        if (!(originatingPeerId in internalPeers)) {
+          internalPeers[originatingPeerId] = new SimplePeer({
+            initiator: false,
+            // stream,
+            trickle: false,
+            config: peerConfig
+          });
+
+          // May need to pass both originating and actual peerId
+          internalPeers[originatingPeerId].on('signal', signal => {
+            window.socket.emit('relayPeerSignal', {
+              originatingPeerId,
+              roomId,
+              signal
+            });
+          });
+
+          internalPeers[originatingPeerId].on('stream', stream => {
+            console.log('stream from', originatingPeerId, stream);
+          });
         }
+
+        internalPeers[originatingPeerId].signal(signal);
+      });
+
+      internalPeers[peerId] = new SimplePeer({
+        initiator: joinRoomRes.initiator,
+        stream,
+        trickle: false,
+        config: peerConfig
+      });
+
+      internalPeers[peerId].on('signal', signal => {
+        window.socket.emit('relayPeerSignal', {
+          originatingPeerId: peerId,
+          roomId,
+          signal
+        });
+      });
+
+      internalPeers[peerId].on('stream', stream => {
+        console.log('stream from', peerId, stream);
       });
     }
     catch (error) {
