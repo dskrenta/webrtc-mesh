@@ -1,0 +1,69 @@
+a, b, c
+
+a, b
+a-a -> b-a
+a-b <- b-b
+
+a1 -> a
+a2 -> a
+a3 -> a
+
+
+a - first
+-----
+{
+  a: {
+    initiator: false
+  },
+  b: {
+    initiator: false
+  },
+  c: {
+    initiator: false
+  }
+}
+
+
+b - second
+-----
+
+
+{
+  a: {
+    initiator: false
+  },
+  b: {
+    initiator: true
+  },
+  c: {
+    initiator: false
+  }
+}
+
+
+c - third
+-----
+{
+  a: {
+    initiator: false
+  },
+  b: {
+    initiator: false
+  },
+  c: {
+    initiator: true
+  }
+}
+
+{
+  senderPeerId
+  targetPeerId
+  roomId
+  initiator
+  signal
+}
+
+internalPeers[]
+
+a -> b
+a <- b

@@ -25,6 +25,8 @@
 
       const peerId = randomId();
 
+      console.log('peerId', peerId);
+
       const internalPeers = {};
 
       // Get video stream from browser
@@ -36,13 +38,14 @@
       window.socket.on(`peerSignal:${roomId}`, ({
         originatingPeerId,
         roomId,
-        signal
+        signal,
+        initiator
       }) => {
         console.log('signal from', originatingPeerId, 'in room', roomId, signal);
 
         if (!(originatingPeerId in internalPeers)) {
           internalPeers[originatingPeerId] = new SimplePeer({
-            initiator: true,
+            initiator,
             stream,
             trickle: false,
             config: peerConfig
@@ -51,9 +54,10 @@
           // May need to pass both originating and actual peerId
           internalPeers[originatingPeerId].on('signal', signal => {
             window.socket.emit('relayPeerSignal', {
-              originatingPeerId,
+              originatingPeerId: peerId,
               roomId,
-              signal
+              signal,
+              initiator: false
             });
           });
 
@@ -62,6 +66,9 @@
           });
         }
 
+        console.log('peers', internalPeers);
+
+        console.log('signaling', 'peerId', peerId, 'originatingPeerId', originatingPeerId);
         internalPeers[originatingPeerId].signal(signal);
       });
 
@@ -76,7 +83,8 @@
         window.socket.emit('relayPeerSignal', {
           originatingPeerId: peerId,
           roomId,
-          signal
+          signal,
+          initiator: joinRoomRes.initiator
         });
       });
 

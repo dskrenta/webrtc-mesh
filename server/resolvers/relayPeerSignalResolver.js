@@ -5,7 +5,8 @@ async function relayPeerSignalResolver({
   io,
   originatingPeerId,
   roomId,
-  signal
+  signal,
+  initiator = false
 }) {
   try {
     // Check if socket is authenticated
@@ -16,12 +17,13 @@ async function relayPeerSignalResolver({
     }
     */
 
-    console.log('peer signal', 'originatingPeerId', originatingPeerId, 'roomId', roomId, 'signal', signal);
+    console.log('peer signal', 'originatingPeerId', originatingPeerId, 'roomId', roomId, 'initiator', initiator, 'signal', signal);
 
     socket.broadcast.emit(`peerSignal:${roomId}`, {
       originatingPeerId,
       roomId,
-      signal
+      signal,
+      initiator
     });
   }
   catch (error) {
