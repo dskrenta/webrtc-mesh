@@ -1,3 +1,3 @@
-# js-web-project
+# webrtc-conf
 
-Template for js web projects
+Simple-peer based P2P mesh network template
