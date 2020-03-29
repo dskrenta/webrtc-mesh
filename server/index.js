@@ -13,7 +13,7 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const signalServer = require('simple-signal-server')(io);
 const path = require('path');
-const smsClient = require('twilio')(process.env.twilioAccountSid, process.env.twilioAuthToken);
+const twilioClient = require('twilio')(process.env.twilioAccountSid, process.env.twilioAuthToken);
 
 // Internal utility imports
 const {
@@ -76,7 +76,7 @@ signalServer.on('request', request => {
 // On socket connection
 io.on('connection', (socket) => {
   // Context for resolvers
-  const context = { socket, io, smsClient, rooms };
+  const context = { socket, io, twilioClient, rooms };
 
   // Utility for generating socket resolvers
   const generateResolver = (name, fn) => socket.on(name, (args) => fn({ ...args, ...context }));
@@ -92,5 +92,5 @@ app.get('/index.html', (req, res) => res.sendFile(path.resolve(`${__dirname}/../
 // Start server
 server.listen(
   PORT,
-  () => console.log(`webrtc-conf server listening on port ${PORT}!`)
+  () => console.log(`webrtc-mesh server listening on port ${PORT}!`)
 );

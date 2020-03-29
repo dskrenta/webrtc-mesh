@@ -1,3 +1,3 @@
-# webrtc-conf
+# webrtc-mesh
 
-Simple-peer based P2P mesh network template
+Simple-peer based WebRTC P2P mesh network template

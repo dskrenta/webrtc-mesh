@@ -1,11 +1,11 @@
 'use strict';
 
 async function iceServersResolver({
-  smsClient,
+  twilioClient,
   socket
 }) {
   try {
-    const ntsData = await smsClient.tokens.create();
+    const ntsData = await twilioClient.tokens.create();
     socket.emit('iceServersResponse', ntsData.iceServers);
   }
   catch (error) {
