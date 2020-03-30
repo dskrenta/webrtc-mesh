@@ -3,30 +3,32 @@
 const Home = {
   render: async () => {
     return /*html*/ `
-      <h1 class="logo">webrtc-mesh</h1>
-      <p>Video Conferencing Made Easy.</p>
-      <h5>Join - or - Create</h5>
-      <form
-        id="inputForm"
-        class="form"
-      >
-        <input
-          id="username"
-          placeholder="Username"
-          autocomplete="off"
-        />
-        <input
-          id="roomId"
-          placeholder="Conference ID"
-          autocomplete="off"
-        />
-        <button
-          id="submit"
-          type="submit"
+      <div class="home">
+        <h1 class="logo">webrtc-mesh</h1>
+        <p class="tagline">Video Conferencing Made Easy.</p>
+        <h5 class="callToAction">Join - or - Create</h5>
+        <form
+          id="inputForm"
+          class="form"
         >
-          Join
-        </button>
-      </form>
+          <input
+            id="username"
+            placeholder="Username"
+            autocomplete="off"
+          />
+          <input
+            id="roomId"
+            placeholder="Conference ID"
+            autocomplete="off"
+          />
+          <button
+            id="submit"
+            type="submit"
+          >
+            Join
+          </button>
+        </form>
+      </div>
     `;
   },
   afterRender: async () => {
