@@ -141,64 +141,60 @@ const Chat = {
       }
     });
 
-    const urlId = Chat.request.id;
-    const values = urlId.split('-');
+    const roomId = Chat.request.id;
 
-    if (values.length < 2) {
-      alert('No username specified.');
-    }
-    else {
-      const { toggleMuteVideo, toggleMuteAudio } = await start({
-        localVideoContainer: document.getElementById('videoList'),
-        smallVideoClickHandler,
-        remoteVideoContainer: document.getElementById('videoList'),
-        localVideoElement: document.getElementById('mainVideo'),
-        roomId: values[0],
-        username: values[1]
-      });
+    const {
+      toggleMuteVideo,
+      toggleMuteAudio
+    } = await start({
+      localVideoContainer: document.getElementById('videoList'),
+      smallVideoClickHandler,
+      remoteVideoContainer: document.getElementById('videoList'),
+      localVideoElement: document.getElementById('mainVideo'),
+      roomId,
+    });
 
-      // Toggle mute button
-      const muteButton = document.getElementById('muteButton');
-      muteButton.addEventListener('click', () => {
-        toggleMuteAudio();
+    // Toggle mute button
+    const muteButton = document.getElementById('muteButton');
+    muteButton.addEventListener('click', () => {
+      toggleMuteAudio();
 
-        if (muteButton.value === 'on') {
-          muteButton.value = 'off';
-          muteButton.innerHTML = `
-            <img src="/static/images/mutemic.png" alt="" class="controlIcon" />
-            <span style="color:var(--second)">Unmute</span>
-          `;
-        }
-        else {
-          muteButton.value = 'on';
-          muteButton.innerHTML = `
-            <img src="/static/images/mic.png" alt="" class="controlIcon" />
-            <span>Mute</span>
-          `;
-        }
-      });
+      if (muteButton.value === 'on') {
+        muteButton.value = 'off';
+        muteButton.innerHTML = `
+          <img src="/static/images/mutemic.png" alt="" class="controlIcon" />
+          <span style="color:var(--second)">Unmute</span>
+        `;
+      }
+      else {
+        muteButton.value = 'on';
+        muteButton.innerHTML = `
+          <img src="/static/images/mic.png" alt="" class="controlIcon" />
+          <span>Mute</span>
+        `;
+      }
+    });
 
-      // Toggle video button
-      const videoButton = document.getElementById('videoButton');
-      videoButton.addEventListener('click', () => {
-        toggleMuteVideo();
+    // Toggle video button
+    const videoButton = document.getElementById('videoButton');
+    videoButton.addEventListener('click', () => {
+      toggleMuteVideo();
 
-        if (videoButton.value === 'on') {
-          videoButton.value = 'off';
-          videoButton.innerHTML = `
-            <img src="/static/images/stopvideo.png" alt="" class="controlIcon" />
-            <span style="color:var(--second)">Start Video</span>
-          `;
-        }
-        else {
-          videoButton.value = 'on';
-          videoButton.innerHTML = `
-            <img src="static/images/video.png" alt="" class="controlIcon" />
-            <span>Stop Video</span>
-          `;
-        }
-      });
-    }
+      if (videoButton.value === 'on') {
+        videoButton.value = 'off';
+        videoButton.innerHTML = `
+          <img src="/static/images/stopvideo.png" alt="" class="controlIcon" />
+          <span style="color:var(--second)">Start Video</span>
+        `;
+      }
+      else {
+        videoButton.value = 'on';
+        videoButton.innerHTML = `
+          <img src="static/images/video.png" alt="" class="controlIcon" />
+          <span>Stop Video</span>
+        `;
+      }
+    });
   }
 };
 

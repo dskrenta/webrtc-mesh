@@ -5,17 +5,12 @@ const Home = {
     return /*html*/ `
       <div class="home">
         <h1 class="logo">webrtc-mesh</h1>
-        <p class="tagline">Video Conferencing Made Easy.</p>
-        <h5 class="callToAction">Join - or - Create</h5>
+        <p class="tagline">Video conferencing made easy.</p>
+        <h5 class="callToAction">Join or create</h5>
         <form
           id="inputForm"
           class="form"
         >
-          <input
-            id="username"
-            placeholder="Username"
-            autocomplete="off"
-          />
           <input
             id="roomId"
             placeholder="Conference ID"
@@ -34,17 +29,15 @@ const Home = {
   afterRender: async () => {
     // HTML elements
     const formElement = document.getElementById('inputForm');
-    const usernameInputElement = document.getElementById('username');
     const roomIdInputElement = document.getElementById('roomId');
 
     // Form on submit listener
     formElement.addEventListener('submit', event => {
       event.preventDefault();
 
-      const username = usernameInputElement.value;
       const roomId = roomIdInputElement.value;
 
-      window.navigate(`#chat/${roomId}-${username}`);
+      window.navigate(`#chat/${roomId}`);
     });
   }
 };

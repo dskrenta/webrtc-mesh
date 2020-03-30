@@ -10,7 +10,6 @@ export default async function start({
   remoteVideoContainer,
   localVideoContainer,
   localVideoElement,
-  username,
   roomId
 }) {
   try {
@@ -34,7 +33,6 @@ export default async function start({
 
     // Creates a video element, sets a mediastream as it's source, and appends it to the DOM
     function createVideoElement(container, mediaStream, muted=false) {
-      console.log(mediaStream);
       const videoElement = document.createElement('video');
       videoElement.autoplay = true;
       videoElement.srcObject = mediaStream;
