@@ -136,7 +136,7 @@ export default async function start({
       const videoElement = createVideoElement(localVideoContainer, localStream, true);
 
       // Set style to indicate this is local video
-      videoElement.style = 'border: red; border-style: solid;';
+      videoElement.classList.add('smallVideoActive');
 
       // Register click handler
       smallVideoClickHandler(videoElement, localStream);

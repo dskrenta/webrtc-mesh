@@ -74,6 +74,12 @@ const Chat = {
       }
     }
 
+    function clearActiveClass() {
+      document.querySelectorAll('.smallVideo').forEach((element) => {
+        element.classList.remove('smallVideoActive');
+      });
+    }
+
     function smallVideoClickHandler(element, srcObject = false) {
       element.addEventListener('click', () => {
         const oldSourceElement = document.getElementById('mainVideo');
@@ -81,6 +87,9 @@ const Chat = {
         // oldSourceElement.pause();
         oldSourceElement.srcObject = srcObject ? srcObject : element.srcObject;
         oldSourceElement.play();
+
+        clearActiveClass();
+        element.classList.add('smallVideoActive');
       });
     }
 

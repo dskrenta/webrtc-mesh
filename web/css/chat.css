@@ -148,12 +148,11 @@
 .control:focus,
 .inviteButton:active,
 .inviteButton:focus,
-.smallVideo video:active,
-.smallVideo video:focus,
 .smallVideo:active,
-.smallVideo:focus {
+.smallVideo:focus,
+.smallVideoActive {
   z-index: 1;
-  outline: 2px solid var(--mainhalf);
+  outline: 3px solid var(--mainhalf);
 }
 .control:hover {
   background: var(--shade2);
