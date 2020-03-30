@@ -8,7 +8,7 @@ const Chat = {
       <div class="contentContainer">
         <div id="clientsContainer">
           <div class="mainVideo">
-            <video autoplay controls loop>
+            <video id="mainVideo" autoplay controls loop>
               <source src="https://www.w3schools.com/tags/movie.mp4" type="video/mp4">
               Your browser does not support the video tag.
             </video>
@@ -19,12 +19,17 @@ const Chat = {
               <span>Invite</span>
             </button>
             <div class="smallVideo">
-              <video autoplay loop>
+              <video id="smallVideo" autoplay loop>
                 <source src="https://www.w3schools.com/tags/movie.mp4" type="video/mp4">
                 Your browser does not support the video tag.
               </video>
             </div>
-            <div class="smallVideo"></div>
+            <div class="smallVideo">
+              <video id="smallVideo" autoplay loop>
+                <source src="https://archive.org/download/Popeye_forPresident/Popeye_forPresident_512kb.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
           </div>
         </div>
         <div id="sideMenu" class="sideMenu" style="width: 0;">
@@ -80,6 +85,19 @@ const Chat = {
         })
       }
     }
+
+    // small video to large
+    document.querySelectorAll('#smallVideo').forEach((element) => {
+      element.addEventListener('click', () => {
+        const newSource = element.innerHTML;
+        const oldSourceElement = document.getElementById('mainVideo');
+
+        oldSourceElement.pause();
+        oldSourceElement.innerHTML = newSource;
+        oldSourceElement.load();
+        oldSourceElement.play();
+      })
+    })
 
     // participants menu
     document.getElementById('peopleButton').addEventListener('click', () => {
