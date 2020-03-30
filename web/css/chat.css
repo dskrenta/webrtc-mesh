@@ -1,0 +1,243 @@
+:root {
+  --main: cornflowerblue;
+  --second: #d56;
+  --mainhalf: #69da;
+  /* light theme */
+  --shade1: #fff;
+  --shade2: #eee;
+  --shade3: #ddd;
+  --text: #333;
+  --icon: none;
+  /* dark theme
+  --shade1: #000;
+  --shade2: #111;
+  --shade3: #222;
+  --text: #fff;
+  --icon: invert(100%) sepia(5%) saturate(21%) hue-rotate(171deg) brightness(104%) contrast(100%);*/
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--shade2);
+}
+.contentContainer {
+  width: 100%;
+  height: calc(100vh - 60px);
+  display: flex;
+}
+#clientsContainer {
+  width: 100%;
+  height: calc(100vh - 60px);
+  transition: all 0.2s;
+}
+.mainVideo {
+  width: 100%;
+  height: calc(100vh - 180px);
+  background: var(--shade3);
+  box-sizing: border-box;
+}
+.mainVideo video,
+.smallVideo video {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  overflow: hidden;
+  background: black;
+}
+.videoList {
+  display: flex;
+  width: 100%;
+  height: 120px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.smallVideo,
+.inviteButton {
+  height: 100px;
+  width: 170px;
+  min-width: 170px;
+  background: var(--shade3);
+  color: var(--text);
+  margin-right: 10px;
+  margin-left: auto;
+  box-sizing: border-box;
+}
+.smallVideo video {
+  object-fit: cover;
+}
+.smallVideo {
+  margin-left: auto;
+}
+.smallVideo:last-child {
+  margin-right: auto;
+}
+.inviteButton {
+  border: 1px solid var(--shade3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-weight: bold;
+  font-size: 14px;
+  background: var(--shade1);
+  cursor: pointer;
+}
+.inviteButton:hover {
+  background: var(--shade3);
+}
+
+.sideMenu {
+  height: calc(100vh - 60px);
+  width: 0;
+  overflow: hidden;
+  background: var(--shade1);
+  border-left: 1px solid var(--shade3);
+}
+.sideMenuHeader {
+  height: 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+.sideMenuTitle {
+  text-align: center;
+}
+#closeSideMenu {
+  border: none;
+  background: none;
+  color: var(--second);
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+#copyInvite {
+  display: flex;
+  height: 40px;
+  line-height: 40px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 20px;
+  padding: 0 20px;
+  margin: 12px auto;
+  background: var(--main);
+  color: white;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sideMenuInvite {
+  text-align: center;
+}
+.sideMenuList {
+  list-style: none;
+  padding: 0 16px;
+}
+.sideMenuPerson {
+  text-align: left;
+}
+
+.controls {
+  display: flex;
+  height: 60px;
+  width: 100%;
+}
+.control {
+  flex: 1;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border: 1px solid var(--shade3);
+  border-right: none;
+  background: var(--shade1);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: bold;
+  outline: none;
+  font-size: 12px;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+.control:active,
+.control:focus,
+.inviteButton:active,
+.inviteButton:focus {
+  z-index: 1;
+  outline: 2px solid var(--mainhalf);
+}
+.control:hover {
+  background: var(--shade2);
+}
+#leaveButton {
+  color: var(--second);
+  font-size: 14px;
+}
+.controlIcon {
+  height: 24px;
+  width: 24px;
+  margin-bottom: 4px;
+  filter: var(--icon);
+}
+
+.controlDropdown {
+  position: relative;
+  height: 60px;
+  width: 60px;
+}
+.controlMenu {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s;
+  position: absolute;
+  top: 35px;
+  right: 0;
+  width: 200px;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  background: var(--shade1);
+  box-shadow: 0 2px 8px var(--shade3);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: normal;
+  margin: 0;
+  overflow: hidden;
+  list-style: none;
+}
+.controlDropdown:hover .controlMenu {
+  visibility: visible;
+  opacity: 1;
+}
+.controlDropIcon {
+  height: 60px;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.controlOptionHeader,
+.controlOption {
+  width: 100%;
+  text-align: left;
+  padding: 4px 0;
+  box-sizing: border-box;
+}
+.controlOptionHeader {
+  font-weight: bold;
+}
+.controlOption {
+  cursor: pointer;
+  padding-left: 12px;
+}
+.controlOption:hover {
+  background: var(--shade3);
+}
