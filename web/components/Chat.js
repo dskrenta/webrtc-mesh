@@ -36,10 +36,10 @@ const Chat = {
           <img src="/static/images/video.png" alt="" class="controlIcon" />
           <span>Stop Video</span>
         </button>
-        <button id="peopleButton" class="control" value="on">
+        <!--button id="peopleButton" class="control" value="on">
           <img src="/static/images/group.png" alt="" class="controlIcon" />
           <span>6 People</span>
-        </button>
+        </button-->
       </div>
     `;
   },
