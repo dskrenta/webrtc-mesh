@@ -1,5 +1,6 @@
 'use strict';
 
+import start from '../utils/start.js';
 import copyToClipboard from '../utils/copyToClipboard.js';
 
 const Chat = {
@@ -8,28 +9,15 @@ const Chat = {
       <div class="contentContainer">
         <div id="clientsContainer">
           <div class="mainVideo">
-            <video id="mainVideo" autoplay controls loop>
-              <source src="https://www.w3schools.com/tags/movie.mp4" type="video/mp4">
+            <video id="mainVideo" autoplay controls>
               Your browser does not support the video tag.
             </video>
           </div>
-          <div class="videoList">
+          <div id="videoList" class="videoList">
             <button id="inviteButton" class="inviteButton smallVideo" value="off">
               <img src="/static/images/invite.png" alt="" class="controlIcon" />
               <span>Invite</span>
             </button>
-            <div class="smallVideo">
-              <video id="smallVideo" autoplay loop>
-                <source src="https://www.w3schools.com/tags/movie.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
-            </div>
-            <div class="smallVideo">
-              <video id="smallVideo" autoplay loop>
-                <source src="https://archive.org/download/Popeye_forPresident/Popeye_forPresident_512kb.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
-            </div>
           </div>
         </div>
         <div id="sideMenu" class="sideMenu" style="width: 0;">
@@ -86,18 +74,15 @@ const Chat = {
       }
     }
 
-    // small video to large
-    document.querySelectorAll('#smallVideo').forEach((element) => {
+    function smallVideoClickHandler(element, srcObject = false) {
       element.addEventListener('click', () => {
-        const newSource = element.innerHTML;
         const oldSourceElement = document.getElementById('mainVideo');
 
-        oldSourceElement.pause();
-        oldSourceElement.innerHTML = newSource;
-        oldSourceElement.load();
+        // oldSourceElement.pause();
+        oldSourceElement.srcObject = srcObject ? srcObject : element.srcObject;
         oldSourceElement.play();
-      })
-    })
+      });
+    }
 
     // participants menu
     document.getElementById('peopleButton').addEventListener('click', () => {
@@ -185,6 +170,23 @@ const Chat = {
         `;
       }
     });
+
+    const urlId = Chat.request.id;
+    const values = urlId.split('-');
+
+    if (values.length < 2) {
+      alert('No username specified.');
+    }
+    else {
+      start({
+        localVideoContainer: document.getElementById('videoList'),
+        smallVideoClickHandler,
+        remoteVideoContainer: document.getElementById('videoList'),
+        localVideoElement: document.getElementById('mainVideo'),
+        roomId: values[0],
+        username: values[1]
+      });
+    }
   }
 };
 
