@@ -155,6 +155,23 @@ export default async function start({
 
       // Join room
       joinRoom(roomId, localStream);
+
+      return {
+        toggleMuteVideo: () => {
+          console.log(localStream, localStream.getVideoTracks())
+          if (localStream && localStream.getVideoTracks().length > 0) {
+            localStream.getVideoTracks()[0].enabled = !localStream.getVideoTracks()[0].enabled;
+          }
+        },
+        toggleMuteAudio: () => {
+          if (localStream && localStream.getAudioTracks().length > 0) {
+            localStream.getAudioTracks()[0].enabled = !localStream.getAudioTracks()[0].enabled;
+          }
+        }
+      }
+    }
+    else {
+      return null;
     }
   }
   catch (error) {
