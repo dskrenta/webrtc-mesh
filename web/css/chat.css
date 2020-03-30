@@ -147,7 +147,11 @@
 .control:active,
 .control:focus,
 .inviteButton:active,
-.inviteButton:focus {
+.inviteButton:focus,
+.smallVideo video:active,
+.smallVideo video:focus,
+.smallVideo:active,
+.smallVideo:focus {
   z-index: 1;
   outline: 2px solid var(--mainhalf);
 }
