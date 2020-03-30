@@ -41,6 +41,7 @@
   margin-right: 10px;
   margin-left: auto;
   box-sizing: border-box;
+  object-fit: cover;
 }
 .smallVideo video {
   object-fit: cover;
