@@ -19,13 +19,13 @@ const Chat = {
               <span>Invite</span>
             </button>
             <div class="smallVideo">
-              <video id="smallVideo" autoplay loop>
+              <video autoplay loop>
                 <source src="https://www.w3schools.com/tags/movie.mp4" type="video/mp4">
                 Your browser does not support the video tag.
               </video>
             </div>
             <div class="smallVideo">
-              <video id="smallVideo" autoplay loop>
+              <video autoplay loop>
                 <source src="https://archive.org/download/Popeye_forPresident/Popeye_forPresident_512kb.mp4" type="video/mp4">
                 Your browser does not support the video tag.
               </video>
@@ -87,7 +87,7 @@ const Chat = {
     }
 
     // small video to large
-    document.querySelectorAll('#smallVideo').forEach((element) => {
+    document.querySelectorAll('.smallVideo > video').forEach((element) => {
       element.addEventListener('click', () => {
         const newSource = element.innerHTML;
         const oldSourceElement = document.getElementById('mainVideo');
