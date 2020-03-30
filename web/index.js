@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  // Development logs
   const LOGS = false;
 
   async function start({
@@ -32,6 +33,7 @@
 
       // Creates a video element, sets a mediastream as it's source, and appends it to the DOM
       function createVideoElement(container, mediaStream, muted=false) {
+        console.log(mediaStream);
         const videoElement = document.createElement('video');
         videoElement.autoplay = true;
         videoElement.srcObject = mediaStream;
@@ -111,7 +113,20 @@
         signalClient.addListener('discover', onRoomPeers);
       }
 
-      navigator.getUserMedia({ audio: true, video: true }, (localStream) => {
+      // Local stream
+      let localStream = null;
+
+      // Attempt to getUserMedia
+      try {
+        localStream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      }
+      catch (error) {
+        alert('Unable to get webcam');
+        console.error('getUserMedia error', error);
+      }
+
+      // If local stream is defined
+      if (localStream) {
         // Display local video
         createVideoElement(localVideoContainer, localStream, true);
 
@@ -123,7 +138,7 @@
 
         // Join room
         joinRoom(roomId, localStream);
-      }, () => alert('No webcam access!'));
+      }
     }
     catch (error) {
       console.error('start error', error);
@@ -157,10 +172,6 @@
     catch (error) {
       console.error('main error', error);
     }
-  }
-
-  function randomId() {
-    return Math.random().toString(36).substr(2, 9);
   }
 
   function api({
