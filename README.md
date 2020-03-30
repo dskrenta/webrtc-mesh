@@ -2,6 +2,8 @@
 
 Simple-peer based WebRTC P2P mesh network template
 
+Demo at [https://howlix.com](https://howlix.com)
+
 ## Usage
 
 ```
