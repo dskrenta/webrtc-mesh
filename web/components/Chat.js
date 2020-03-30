@@ -93,10 +93,10 @@ const Chat = {
       });
     }
 
-    // participants menu
+    /*/ participants menu
     document.getElementById('peopleButton').addEventListener('click', () => {
       if (menu.style.width === 0 || menu.style.width === '0px') {
-        openSideMenu(/*html*/`
+        openSideMenu(/*html* /`
           <div class="sideMenuInvite">
             <h2 class="sideMenuTitle">6 People are here</h2>
             <ul class="sideMenuList">
@@ -113,7 +113,7 @@ const Chat = {
       else {
         closeSideMenu();
       }
-    });
+    });*/
 
     // invite menu
     document.getElementById('inviteButton').addEventListener('click', () => {
