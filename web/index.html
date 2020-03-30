@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
     <title>webrtc-mesh</title>
-    <link rel="stylesheet" href="/static/index.css"></head>
+    <link rel="stylesheet" href="/static/css/index.css" type="text/css" />
+    <link rel="stylesheet" href="/static/css/chat.css" type="text/css" />
+  </head>
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
+    <div id="app-body"></div>
+
+    <!---
     <div class="container" id="content">
       <h1>Enter your information to start</h1>
       <form id="inputForm">
@@ -20,9 +25,31 @@
       <div id="localVideo"></div>
 			<div id="remoteVideos"></div>
     </div>
+    <script type="text/javascript" src="/static/index.js"></script>
+    -->
+
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script type="text/javascript" src="/static/simplepeer.min.js"></script>
     <script type="text/javascript" src="/static/simple-signal-client.min.js"></script>
-    <script type="text/javascript" src="/static/index.js"></script>
+
+    <script type="module">
+      'use strict';
+
+      import { init } from '/static/lib/spa.js';
+
+      import Home from '/static/components/Home.js';
+      import Chat from '/static/components/Chat.js';
+
+      // Register socket.io
+      window.socket = io('http://localhost:3000');
+
+      init({
+        views: {
+          '/': Home,
+          'chat': Chat,
+        },
+        viewElementId: 'app-body',
+      });
+    </script>
   </body>
 </html>
