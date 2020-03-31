@@ -51,6 +51,8 @@ const Chat = {
     `;
   },
   afterRender: async () => {
+    const roomId = Chat.request.id;
+
     const menu = document.getElementById('sideMenu');
     const clients = document.getElementById('clientsContainer');
 
@@ -138,6 +140,7 @@ const Chat = {
     const goModal = document.getElementById('goModalContainer');
     document.getElementById('goButton').addEventListener('click', () => {
       goModal.style.display = 'none';
+      beginChat();
     });
     /*
     document.getElementById('goModalBackground').addEventListener('click', () => {
@@ -172,66 +175,72 @@ const Chat = {
       }
     });
 
-    const roomId = Chat.request.id;
+    async function beginChat() {
+      try {
+        const {
+          toggleFlipVideo,
+          toggleMuteVideo,
+          toggleMuteAudio
+        } = await start({
+          localVideoContainer: document.getElementById('videoList'),
+          smallVideoClickHandler,
+          remoteVideoContainer: document.getElementById('videoList'),
+          localVideoElement: document.getElementById('mainVideo'),
+          roomId,
+        });
 
-    const {
-      toggleFlipVideo,
-      toggleMuteVideo,
-      toggleMuteAudio
-    } = await start({
-      localVideoContainer: document.getElementById('videoList'),
-      smallVideoClickHandler,
-      remoteVideoContainer: document.getElementById('videoList'),
-      localVideoElement: document.getElementById('mainVideo'),
-      roomId,
-    });
+        // Toggle camera flip
+        document.getElementById('flipButton').addEventListener('click', () => {
+          toggleFlipVideo();
+        });
 
-    // Toggle camera flip
-    document.getElementById('flipButton').addEventListener('click', () => {
-      toggleFlipVideo();
-    });
+        // Toggle mute button
+        const muteButton = document.getElementById('muteButton');
+        muteButton.addEventListener('click', () => {
+          toggleMuteAudio();
 
-    // Toggle mute button
-    const muteButton = document.getElementById('muteButton');
-    muteButton.addEventListener('click', () => {
-      toggleMuteAudio();
+          if (muteButton.value === 'on') {
+            muteButton.value = 'off';
+            muteButton.innerHTML = `
+              <img src="/static/images/mutemic.png" alt="" class="controlIcon" />
+              <span style="color:var(--second)">Unmute</span>
+            `;
+          }
+          else {
+            muteButton.value = 'on';
+            muteButton.innerHTML = `
+              <img src="/static/images/mic.png" alt="" class="controlIcon" />
+              <span>Mute</span>
+            `;
+          }
+        });
 
-      if (muteButton.value === 'on') {
-        muteButton.value = 'off';
-        muteButton.innerHTML = `
-          <img src="/static/images/mutemic.png" alt="" class="controlIcon" />
-          <span style="color:var(--second)">Unmute</span>
-        `;
+        // Toggle video button
+        const videoButton = document.getElementById('videoButton');
+        videoButton.addEventListener('click', () => {
+          toggleMuteVideo();
+
+          if (videoButton.value === 'on') {
+            videoButton.value = 'off';
+            videoButton.innerHTML = `
+              <img src="/static/images/stopvideo.png" alt="" class="controlIcon" />
+              <span style="color:var(--second)">Start</span>
+            `;
+          }
+          else {
+            videoButton.value = 'on';
+            videoButton.innerHTML = `
+              <img src="static/images/video.png" alt="" class="controlIcon" />
+              <span>Stop</span>
+            `;
+          }
+        });
       }
-      else {
-        muteButton.value = 'on';
-        muteButton.innerHTML = `
-          <img src="/static/images/mic.png" alt="" class="controlIcon" />
-          <span>Mute</span>
-        `;
+      catch (error) {
+        alert('Begin chat error');
+        console.error('beginChat error', error);
       }
-    });
-
-    // Toggle video button
-    const videoButton = document.getElementById('videoButton');
-    videoButton.addEventListener('click', () => {
-      toggleMuteVideo();
-
-      if (videoButton.value === 'on') {
-        videoButton.value = 'off';
-        videoButton.innerHTML = `
-          <img src="/static/images/stopvideo.png" alt="" class="controlIcon" />
-          <span style="color:var(--second)">Start</span>
-        `;
-      }
-      else {
-        videoButton.value = 'on';
-        videoButton.innerHTML = `
-          <img src="static/images/video.png" alt="" class="controlIcon" />
-          <span>Stop</span>
-        `;
-      }
-    });
+    }
   }
 };
 
