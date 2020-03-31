@@ -9,7 +9,7 @@ const Chat = {
       <div id="goModalContainer" class="goModalContainer" style="display: flex;">
         <div id="goModalBackground" class="goModalBackground"></div>
         <div class="goModal">
-          <h2>Welcome to @${Chat.request.id}</h2>
+          <h2>Welcome to room ${Chat.request.id}</h2>
           <button id="goButton" class="copyInvite">Go!</button>
         </div>
       </div>
