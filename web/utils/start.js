@@ -125,7 +125,7 @@ export default async function start({
       localStream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
     }
     catch (error) {
-      alert('Unable to get webcam UPDATED' + JSON.stringify(error.message));
+      alert('Unable to get webcam: ' + JSON.stringify(error.message));
       console.error('getUserMedia error', error);
     }
 
@@ -175,7 +175,7 @@ export default async function start({
             }
           }
           catch (error) {
-            alert('Unable to flip webcam');
+            alert('Unable to flip webcam: ' + JSON.stringify(error));
             console.error('toggleFlipVideo error', error);
           }
         },
