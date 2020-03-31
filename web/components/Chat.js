@@ -5,8 +5,6 @@ import copyToClipboard from '../utils/copyToClipboard.js';
 
 const Chat = {
   render: async () => {
-    const isMobile = window.matchMedia('(max-width: 420px)').matches;
-
     return /* html */ `
       <div class="controls">
         <a id="leaveButton" class="control" href="/">
@@ -163,7 +161,7 @@ const Chat = {
       roomId,
     });
 
-    // check if mobile device
+    // Toggle camera flip
     document.getElementById('flipButton').addEventListener('click', () => {
       toggleFlipVideo();
     });
