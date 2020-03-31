@@ -54,7 +54,9 @@ export default async function start({
         const videoElement = createVideoElement(remoteVideoContainer, remoteStream);
 
         // Register click handler
-        smallVideoClickHandler(videoElement);
+        smallVideoClickHandler({
+          element: videoElement
+        });
 
         // On close
         peer.on('close', () => {
@@ -122,7 +124,12 @@ export default async function start({
 
     // Attempt to getUserMedia
     try {
-      localStream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      localStream = await window.navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true
+        },
+        video: true
+      });
     }
     catch (error) {
       alert('Unable to get webcam: ' + JSON.stringify(error.message));
@@ -138,10 +145,17 @@ export default async function start({
       videoElement.classList.add('smallVideoActive');
 
       // Register click handler
-      smallVideoClickHandler(videoElement, localStream);
+      smallVideoClickHandler({
+        element: videoElement,
+        stream: localStream,
+        mute: true
+      });
 
       // Set local video element to local stream
       localVideoElement.srcObject = localStream;
+
+      // Mute local video
+      localVideoElement.muted = true;
 
       // Play local video element
       localVideoElement.play();
@@ -157,7 +171,7 @@ export default async function start({
 
       return {
         toggleFlipVideo: async () => {
-          try {  
+          try {
             console.log(localStream);
 
             const isMobile = window.matchMedia('(max-width: 420px)').matches;
@@ -170,7 +184,7 @@ export default async function start({
 
               flipButton.value = newMode;
               localStream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: newMode } });
-              
+
               console.log(localStream);
             }
           }

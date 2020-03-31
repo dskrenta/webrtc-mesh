@@ -26,7 +26,7 @@ const Chat = {
       <div class="contentContainer">
         <div id="clientsContainer">
           <div class="mainVideo">
-            <video id="mainVideo" autoplay playsinline>
+            <video id="mainVideo" autoplay playsinline controls>
               Your browser does not support the video tag.
             </video>
           </div>
@@ -80,11 +80,18 @@ const Chat = {
       });
     }
 
-    function smallVideoClickHandler(element, srcObject = false) {
+    function smallVideoClickHandler({
+      element,
+      srcObject = false,
+      mute = false
+    }) {
       element.addEventListener('click', () => {
         const oldSourceElement = document.getElementById('mainVideo');
 
         oldSourceElement.srcObject = srcObject ? srcObject : element.srcObject;
+
+        oldSourceElement.muted = mute;
+
         oldSourceElement.play();
 
         clearActiveClass();
@@ -93,12 +100,12 @@ const Chat = {
     }
 
     /* participants menu
-    
+
     <!--button id="peopleButton" class="control" value="on">
       <img src="/static/images/group.png" alt="" class="controlIcon" />
       <span>6 People</span>
     </button-->
-    
+
     document.getElementById('peopleButton').addEventListener('click', () => {
       if (menu.style.width === 0 || menu.style.width === '0px') {
         openSideMenu(/*html* /`
