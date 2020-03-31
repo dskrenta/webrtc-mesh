@@ -9,7 +9,7 @@ const Chat = {
       <div class="contentContainer">
         <div id="clientsContainer">
           <div class="mainVideo">
-            <video id="mainVideo" autoplay controls>
+            <video id="mainVideo" autoplay controls playsinline>
               Your browser does not support the video tag.
             </video>
           </div>
@@ -26,7 +26,7 @@ const Chat = {
       </div>
       <div class="controls">
         <a id="leaveButton" class="control" href="/">
-          <span>Leave Meeting</span>
+          <span>Leave <br class="leaveBreak"/>Meeting</span>
         </a>
         <button id="muteButton" class="control" value="on">
           <img src="/static/images/mic.png" alt="" class="controlIcon" />

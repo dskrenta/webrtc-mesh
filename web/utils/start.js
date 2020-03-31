@@ -35,6 +35,7 @@ export default async function start({
     function createVideoElement(container, mediaStream, muted=false) {
       const videoElement = document.createElement('video');
       videoElement.autoplay = true;
+      videoElement.playsinline = true;
       videoElement.srcObject = mediaStream;
       videoElement.muted = muted;
       videoElement.classList.add('smallVideo');

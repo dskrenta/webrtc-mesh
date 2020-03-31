@@ -35,7 +35,6 @@
 .inviteButton {
   height: 100px;
   width: 170px;
-  min-width: 170px;
   background: var(--shade3);
   color: var(--text);
   margin-right: 10px;
@@ -124,10 +123,10 @@
 .controls {
   display: flex;
   height: 60px;
-  width: 100%;
+  width: 100vw;
 }
 .control {
-  flex: 1;
+  width: calc(100vw / 3);
   height: 60px;
   display: flex;
   align-items: center;
@@ -161,6 +160,10 @@
 #leaveButton {
   color: var(--second);
   font-size: 14px;
+  text-align: center;
+}
+.leaveBreak {
+  display: none;
 }
 .controlIcon {
   height: 24px;
@@ -221,4 +224,13 @@
 }
 .controlOption:hover {
   background: var(--shade3);
+}
+
+@media (max-width: 400px) {
+  .leaveBreak {
+    display: block;
+  }
+  .inviteButton {
+    width: 100px;
+  }
 }
