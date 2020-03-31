@@ -78,6 +78,8 @@
   background: var(--dark4);
 }
 
+/* Side Menu */
+
 .sideMenu {
   height: calc(100vh - 60px);
   width: 0;
@@ -111,7 +113,7 @@
   font-size: 14px;
   cursor: pointer;
 }
-#copyInvite {
+.copyInvite {
   display: flex;
   height: 40px;
   line-height: 40px;
@@ -137,6 +139,8 @@
 .sideMenuPerson {
   text-align: left;
 }
+
+/* Controls */
 
 .controls {
   display: flex;
@@ -198,6 +202,8 @@
   filter: var(--icon);
 }
 
+/* Control Dropdown */
+
 .controlDropdown {
   position: relative;
   height: 60px;
@@ -250,6 +256,35 @@
 }
 .controlOption:hover {
   background: var(--shade3);
+}
+
+/* Go Modal */
+
+.goModalContainer,
+.goModalBackground {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.goModalBackground {
+  background: rgba(30,30,30,0.9);
+  z-index: 1;
+}
+.goModal {
+  z-index: 2;
+  background: var(--dark1);
+  color: var(--text);
+  text-align: center;
+  padding: 12px 24px 24px;
+  width: 315px;
+  box-sizing: border-box;
+  border-radius: 8px;
 }
 
 @media (max-width: 420px) {

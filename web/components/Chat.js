@@ -6,6 +6,13 @@ import copyToClipboard from '../utils/copyToClipboard.js';
 const Chat = {
   render: async () => {
     return /* html */ `
+      <div id="goModalContainer" class="goModalContainer" style="display: flex;">
+        <div id="goModalBackground" class="goModalBackground"></div>
+        <div class="goModal">
+          <h2>Welcome to @${Chat.request.id}</h2>
+          <button id="goButton" class="copyInvite">Go!</button>
+        </div>
+      </div>
       <div class="controls">
         <a id="leaveButton" class="control" href="/">
           <span>Leave <br class="leaveBreak"/>Meeting</span>
@@ -120,13 +127,24 @@ const Chat = {
       }
     });*/
 
+    // go modal
+    const goModal = document.getElementById('goModalContainer');
+    document.getElementById('goButton').addEventListener('click', () => {
+      goModal.style.display = 'none';
+    });
+    /*
+    document.getElementById('goModalBackground').addEventListener('click', () => {
+      goModal.style.display = 'none';
+    });
+    */
+
     // invite menu
     document.getElementById('inviteButton').addEventListener('click', () => {
       if (menu.style.width === 0 || menu.style.width === '0px') {
         openSideMenu(/*html*/`
           <div class="sideMenuInvite">
             <h2 class="sideMenuTitle">Invite Your Friends</h2>
-            <button id="copyInvite">Copy Sharable Link</button>
+            <button id="copyInvite" class="copyInvite">Copy Sharable Link</button>
             <span id="copyMsg"></span>
           </div>
         `);
