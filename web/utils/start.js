@@ -169,6 +169,13 @@ export default async function start({
       // Join room
       joinRoom(roomId, localStream);
 
+      // Destory all peers on before page unload
+      window.addEventListener('beforeunload', () => {
+        signalClient.peers().forEach(peer => {
+          peer.destroy();
+        });
+      })
+
       return {
         toggleFlipVideo: async () => {
           try {
