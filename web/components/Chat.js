@@ -24,10 +24,6 @@ const Chat = {
           <img src="/static/images/flip.png" alt="" class="controlIcon" />
           Flip
         </button>
-        <!--button id="peopleButton" class="control" value="on">
-          <img src="/static/images/group.png" alt="" class="controlIcon" />
-          <span>6 People</span>
-        </button-->
       </div>
       <div class="contentContainer">
         <div id="clientsContainer">
@@ -99,6 +95,12 @@ const Chat = {
     }
 
     /* participants menu
+    
+    <!--button id="peopleButton" class="control" value="on">
+      <img src="/static/images/group.png" alt="" class="controlIcon" />
+      <span>6 People</span>
+    </button-->
+    
     document.getElementById('peopleButton').addEventListener('click', () => {
       if (menu.style.width === 0 || menu.style.width === '0px') {
         openSideMenu(/*html* /`
