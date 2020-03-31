@@ -2,6 +2,8 @@
   width: 100%;
   height: calc(100vh - 60px);
   display: flex;
+
+  background: var(--dark1);
 }
 #clientsContainer {
   width: 100%;
@@ -11,8 +13,10 @@
 .mainVideo {
   width: 100%;
   height: calc(100vh - 180px);
-  background: var(--shade3);
   box-sizing: border-box;
+  background: var(--shade3);
+
+  background: var(--dark1);
 }
 .mainVideo video,
 .smallVideo video {
@@ -30,18 +34,20 @@
   -webkit-overflow-scrolling: touch;
   padding: 10px;
   box-sizing: border-box;
+
+  background: var(--dark2);
 }
 .smallVideo,
 .inviteButton {
   height: 100px;
   width: 170px;
-  min-width: 170px;
   background: var(--shade3);
   color: var(--text);
   margin-right: 10px;
   margin-left: auto;
   box-sizing: border-box;
   object-fit: cover;
+  cursor: pointer;
 }
 .smallVideo video {
   object-fit: cover;
@@ -53,18 +59,23 @@
   margin-right: auto;
 }
 .inviteButton {
-  border: 1px solid var(--shade3);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   font-weight: bold;
   font-size: 14px;
-  background: var(--shade1);
   cursor: pointer;
+
+  border: 1px solid var(--shade3);
+  background: var(--shade1);
+  border: none;
+  background: var(--dark3);
 }
 .inviteButton:hover {
   background: var(--shade3);
+
+  background: var(--dark4);
 }
 
 .sideMenu {
@@ -73,6 +84,12 @@
   overflow: hidden;
   background: var(--shade1);
   border-left: 1px solid var(--shade3);
+  box-sizing: border-box;
+
+  background: var(--dark2);
+  border-left: 1px solid var(--dark4);
+  border-top: 1px solid var(--dark4);
+  color: var(--text);
 }
 .sideMenuHeader {
   height: 40px;
@@ -124,19 +141,16 @@
 .controls {
   display: flex;
   height: 60px;
-  width: 100%;
+  width: 100vw;
 }
 .control {
-  flex: 1;
+  width: calc(100vw / 3);
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  border: 1px solid var(--shade3);
   border-right: none;
-  background: var(--shade1);
-  color: var(--text);
   cursor: pointer;
   transition: all 0.2s;
   font-weight: bold;
@@ -144,6 +158,12 @@
   font-size: 12px;
   text-decoration: none;
   box-sizing: border-box;
+  color: var(--text);
+  border: 1px solid var(--shade3);
+  background: var(--shade1);
+
+  border: none;
+  background: var(--dark2);
 }
 .control:active,
 .control:focus,
@@ -157,10 +177,19 @@
 }
 .control:hover {
   background: var(--shade2);
+
+  background: var(--dark3);
+}
+.flipControl {
+  display: none;
 }
 #leaveButton {
   color: var(--second);
   font-size: 14px;
+  text-align: center;
+}
+.leaveBreak {
+  display: none;
 }
 .controlIcon {
   height: 24px;
@@ -221,4 +250,22 @@
 }
 .controlOption:hover {
   background: var(--shade3);
+}
+
+@media (max-width: 420px) {
+  .leaveBreak {
+    display: block;
+  }
+  .inviteButton {
+    width: 100px;
+  }
+  #leaveButton {
+    width: 30vw;
+  }
+  .control {
+    width: calc(70vw / 3);
+  }
+  .flipControl {
+    display: flex;
+  }
 }

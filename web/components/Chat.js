@@ -6,10 +6,27 @@ import copyToClipboard from '../utils/copyToClipboard.js';
 const Chat = {
   render: async () => {
     return /* html */ `
+      <div class="controls">
+        <a id="leaveButton" class="control" href="/">
+          <span>Leave <br class="leaveBreak"/>Meeting</span>
+        </a>
+        <button id="muteButton" class="control" value="on">
+          <img src="/static/images/mic.png" alt="" class="controlIcon" />
+          <span>Mute</span>
+        </button>
+        <button id="videoButton" class="control" value="on">
+          <img src="/static/images/video.png" alt="" class="controlIcon" />
+          <span>Stop</span>
+        </button>
+        <button id="flipButton" class="control flipControl" value="user">
+          <img src="/static/images/flip.png" alt="" class="controlIcon" />
+          Flip
+        </button>
+      </div>
       <div class="contentContainer">
         <div id="clientsContainer">
           <div class="mainVideo">
-            <video id="mainVideo" autoplay controls>
+            <video id="mainVideo" autoplay playsinline>
               Your browser does not support the video tag.
             </video>
           </div>
@@ -23,23 +40,6 @@ const Chat = {
         <div id="sideMenu" class="sideMenu" style="width: 0;">
           <h1>Hi I'm Menu</h1>
         </div>
-      </div>
-      <div class="controls">
-        <a id="leaveButton" class="control" href="/">
-          <span>Leave Meeting</span>
-        </a>
-        <button id="muteButton" class="control" value="on">
-          <img src="/static/images/mic.png" alt="" class="controlIcon" />
-          <span>Mute</span>
-        </button>
-        <button id="videoButton" class="control" value="on">
-          <img src="/static/images/video.png" alt="" class="controlIcon" />
-          <span>Stop Video</span>
-        </button>
-        <!--button id="peopleButton" class="control" value="on">
-          <img src="/static/images/group.png" alt="" class="controlIcon" />
-          <span>6 People</span>
-        </button-->
       </div>
     `;
   },
@@ -93,6 +93,12 @@ const Chat = {
     }
 
     /* participants menu
+    
+    <!--button id="peopleButton" class="control" value="on">
+      <img src="/static/images/group.png" alt="" class="controlIcon" />
+      <span>6 People</span>
+    </button-->
+    
     document.getElementById('peopleButton').addEventListener('click', () => {
       if (menu.style.width === 0 || menu.style.width === '0px') {
         openSideMenu(/*html* /`
@@ -144,6 +150,7 @@ const Chat = {
     const roomId = Chat.request.id;
 
     const {
+      toggleFlipVideo,
       toggleMuteVideo,
       toggleMuteAudio
     } = await start({
@@ -152,6 +159,11 @@ const Chat = {
       remoteVideoContainer: document.getElementById('videoList'),
       localVideoElement: document.getElementById('mainVideo'),
       roomId,
+    });
+
+    // Toggle camera flip
+    document.getElementById('flipButton').addEventListener('click', () => {
+      toggleFlipVideo();
     });
 
     // Toggle mute button
@@ -184,14 +196,14 @@ const Chat = {
         videoButton.value = 'off';
         videoButton.innerHTML = `
           <img src="/static/images/stopvideo.png" alt="" class="controlIcon" />
-          <span style="color:var(--second)">Start Video</span>
+          <span style="color:var(--second)">Start</span>
         `;
       }
       else {
         videoButton.value = 'on';
         videoButton.innerHTML = `
           <img src="static/images/video.png" alt="" class="controlIcon" />
-          <span>Stop Video</span>
+          <span>Stop</span>
         `;
       }
     });

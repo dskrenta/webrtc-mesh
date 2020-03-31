@@ -35,6 +35,7 @@ export default async function start({
     function createVideoElement(container, mediaStream, muted=false) {
       const videoElement = document.createElement('video');
       videoElement.autoplay = true;
+      videoElement.playsinline = true;
       videoElement.srcObject = mediaStream;
       videoElement.muted = muted;
       videoElement.classList.add('smallVideo');
@@ -124,7 +125,7 @@ export default async function start({
       localStream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
     }
     catch (error) {
-      alert('Unable to get webcam');
+      alert('Unable to get webcam: ' + JSON.stringify(error.message));
       console.error('getUserMedia error', error);
     }
 
@@ -155,15 +156,50 @@ export default async function start({
       joinRoom(roomId, localStream);
 
       return {
+        toggleFlipVideo: async () => {
+          try {  
+            console.log(localStream);
+
+            const isMobile = window.matchMedia('(max-width: 420px)').matches;
+            const flipButton = document.getElementById('flipButton');
+            if (localStream && isMobile && flipButton) {
+              const mode = flipButton.value;
+              const newMode = mode === 'user'
+                ? 'environment'
+                : 'user';
+
+              flipButton.value = newMode;
+              localStream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: newMode } });
+              
+              console.log(localStream);
+            }
+          }
+          catch (error) {
+            alert('Unable to flip webcam: ' + JSON.stringify(error));
+            console.error('toggleFlipVideo error', error);
+          }
+        },
         toggleMuteVideo: () => {
-          console.log(localStream, localStream.getVideoTracks())
-          if (localStream && localStream.getVideoTracks().length > 0) {
-            localStream.getVideoTracks()[0].enabled = !localStream.getVideoTracks()[0].enabled;
+          try {
+            console.log(localStream, localStream.getVideoTracks())
+            if (localStream && localStream.getVideoTracks().length > 0) {
+              localStream.getVideoTracks()[0].enabled = !localStream.getVideoTracks()[0].enabled;
+            }
+          }
+          catch (error) {
+            alert('Unable to stop video');
+            console.error('toggleMuteVideo error', error);
           }
         },
         toggleMuteAudio: () => {
-          if (localStream && localStream.getAudioTracks().length > 0) {
-            localStream.getAudioTracks()[0].enabled = !localStream.getAudioTracks()[0].enabled;
+          try {
+            if (localStream && localStream.getAudioTracks().length > 0) {
+              localStream.getAudioTracks()[0].enabled = !localStream.getAudioTracks()[0].enabled;
+            }
+          }
+          catch (error) {
+            alert('Unable to mute audio');
+            console.error('toggleMuteVideo error', error);
           }
         }
       }
