@@ -40,6 +40,10 @@ export default async function start({
       videoElement.muted = muted;
       videoElement.classList.add('smallVideo');
       container.appendChild(videoElement);
+
+      // Enable inline video for mobile ios safari
+      enableInlineVideo(videoElement);
+
       return videoElement;
     }
 
