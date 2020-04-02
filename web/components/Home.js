@@ -4,25 +4,32 @@ const Home = {
   render: async () => {
     return /*html*/ `
       <div class="home">
-        <h1 class="logo">webrtc-mesh</h1>
-        <p class="tagline">Video conferencing made easy.</p>
-        <h5 class="callToAction">Join or create</h5>
-        <form
-          id="inputForm"
-          class="form"
-        >
-          <input
-            id="roomId"
-            placeholder="Conference ID"
-            autocomplete="off"
-          />
-          <button
-            id="submit"
-            type="submit"
+        <div class="textContain">
+          <h1 class="logo">Howlix</h1>
+          <p class="tagline">Video conferencing made easy.</p>
+          <h5 class="callToAction">Join or create a room</h5>
+          <form
+            id="inputForm"
+            class="form"
           >
-            Join
-          </button>
-        </form>
+            <input
+              id="roomId"
+              placeholder="Conference ID"
+              autocomplete="off"
+            />
+            <button
+              id="submit"
+              type="submit"
+            >
+              Go!
+            </button>
+          </form>
+        </div>
+        <img 
+          src="/static/images/videocall.svg"
+          class="landingImage"
+          alt=""
+        />
       </div>
     `;
   },
