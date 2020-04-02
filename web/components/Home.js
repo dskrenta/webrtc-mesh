@@ -30,6 +30,13 @@ const Home = {
           class="landingImage"
           alt=""
         />
+        <div class="footer">
+          &copy; 2020 Howlix
+          &nbsp;&bull;&nbsp;
+          <a href="#terms" target="_blank">Terms</a>
+          &nbsp;&bull;&nbsp;
+          <a href="#privacy" target="_blank">Privacy</a>
+        </div>
       </div>
     `;
   },

@@ -79,10 +79,12 @@ body {
   background: var(--dark3);
   color: var(--text);*/
 }
-.form input:focus {
+.form input:focus,
+.form button:focus {
   box-shadow: 0 0 0 3px var(--mainhalf);
 }
-.form button {
+.form button,
+.policy button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -101,8 +103,28 @@ body {
   cursor: pointer;
   transition: all 0.2s;
 }
-.form button:hover {
+.form button:hover,
+.policy button:hover {
   box-shadow: 0 2px 8px var(--mainhalf);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  width: 100vw;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 14px;
+}
+.footer a {
+  text-decoration: none;
+  display: contents;
+  color: inherit;
 }
 
 @media (max-width: 740px) {
