@@ -195,9 +195,14 @@ export default async function start({
                 ? 'environment'
                 : 'user';
 
+              // get new stream from other camera
               flipButton.value = newMode;
               localStream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: newMode } });
-
+              // Set local video element to local stream
+              localVideoElement.srcObject = localStream;
+              // Play local video element
+              localVideoElement.play();
+              
               console.log(localStream);
             }
           }
