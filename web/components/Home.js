@@ -5,7 +5,7 @@ const Home = {
     return /*html*/ `
       <div class="home">
         <div class="textContain">
-          <h1 class="logo">Howlix</h1>
+          <h1 class="logo">WebRTC-Mesh</h1>
           <p class="tagline">Video conferencing made easy.</p>
           <h5 class="callToAction">Join or create a room</h5>
           <form
@@ -31,7 +31,7 @@ const Home = {
           alt=""
         />
         <div class="footer">
-          &copy; 2020 Howlix
+          &copy; 2020 webrtc-mesh
           &nbsp;&bull;&nbsp;
           <a href="#terms" target="_blank">Terms</a>
           &nbsp;&bull;&nbsp;
