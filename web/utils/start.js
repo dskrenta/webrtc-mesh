@@ -144,8 +144,13 @@ export default async function start({
 
     // If local stream is defined
     if (localStream) {
+      const localStreamMerger = new VideoStreamMerger();
+      localStreamMerger.start();
+      localStreamMerger.addStream(localStream);
+
       // Display local video
-      const videoElement = createVideoElement(localVideoContainer, localStream, true);
+      // const videoElement = createVideoElement(localVideoContainer, localStream, true);
+      const videoElement = createVideoElement(localVideoContainer, localStreamMerger.result, true);
 
       // Set style to indicate this is local video
       videoElement.classList.add('smallVideoActive');
@@ -153,12 +158,14 @@ export default async function start({
       // Register click handler
       smallVideoClickHandler({
         element: videoElement,
-        stream: localStream,
+        // stream: localStream,
+        stream: localStreamMerger.result,
         mute: true
       });
 
       // Set local video element to local stream
-      localVideoElement.srcObject = localStream;
+      // localVideoElement.srcObject = localStream;
+      localVideoElement.srcObject = localStreamMerger.result;
 
       // Mute local video
       localVideoElement.muted = true;
@@ -169,11 +176,13 @@ export default async function start({
       // Accept request on request and register peer
       signalClient.on('request', async (request) => {
         const { peer } = await request.accept();
-        onPeer(peer, localStream);
+        // onPeer(peer, localStream);
+        onPeer(peer, localStreamMerger.result);
       });
 
       // Join room
-      joinRoom(roomId, localStream);
+      // joinRoom(roomId, localStream);
+      joinRoom(roomId, localStreamMerger.result);
 
       // Destory all peers on before page unload
       window.addEventListener('beforeunload', () => {
@@ -185,25 +194,20 @@ export default async function start({
       return {
         toggleFlipVideo: async () => {
           try {
-            console.log(localStream);
-
             const isMobile = window.matchMedia('(max-width: 420px)').matches;
             const flipButton = document.getElementById('flipButton');
+
             if (localStream && isMobile && flipButton) {
               const mode = flipButton.value;
               const newMode = mode === 'user'
                 ? 'environment'
                 : 'user';
 
-              // get new stream from other camera
+              // Toggle flip button value
               flipButton.value = newMode;
-              localStream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: newMode } });
-              // Set local video element to local stream
-              localVideoElement.srcObject = localStream;
-              // Play local video element
-              localVideoElement.play();
-              
-              console.log(localStream);
+
+              // Get new stream from getUserMedia and add stream to localStreamMerger
+              localStreamMerger.addStream(await window.navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: newMode } }));
             }
           }
           catch (error) {
@@ -213,7 +217,6 @@ export default async function start({
         },
         toggleMuteVideo: () => {
           try {
-            console.log(localStream, localStream.getVideoTracks())
             if (localStream && localStream.getVideoTracks().length > 0) {
               localStream.getVideoTracks()[0].enabled = !localStream.getVideoTracks()[0].enabled;
             }
