@@ -32,9 +32,6 @@ export default async function start({
     // Current room
     let currentRoom = null;
 
-    let localPeers = {};
-
-
     // Creates a video element, sets a mediastream as it's source, and appends it to the DOM
     function createVideoElement(container, mediaStream, muted=false) {
       const videoElement = document.createElement('video');
@@ -51,6 +48,15 @@ export default async function start({
       });
 
       return videoElement;
+    }
+
+    function removeChild({
+      parent,
+      child
+    }) {
+      if (parent.contains(child)) {
+        parent.removeChild(child);
+      }
     }
 
     // Registers new peer with localStream
@@ -73,13 +79,33 @@ export default async function start({
           element: videoElement,
           srcObject: remoteStream,
           mute: false
-        })
+        });
 
         // On close
         peer.on('close', () => {
           // Remove video element from remote video container
-          remoteVideoContainer.removeChild(videoElement);
+          removeChild({
+            parent: remoteVideoContainer,
+            child: videoElement
+          })
         });
+
+        peer.on('error', (error) => {
+          if (LOGS) console.error('Peer error', error);
+
+          // Remove video element from remote video container
+          removeChild({
+            parent: remoteVideoContainer,
+            child: videoElement
+          })
+
+          // Switch main video element source to local stream
+          switchMainVideoElementSource({
+            element: registeredVideoElement,
+            srcObject: localStream,
+            mute: true
+          });
+        })
       });
     }
 
@@ -237,14 +263,14 @@ export default async function start({
               flipButton.value = newMode;
 
               // Get media stream with new facingMode
-              const stream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: newMode } });
+              localStream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: newMode } });
 
               // Remove current registered video element from local video container
               localVideoContainer.removeChild(registeredVideoElement);
 
               // Register new stream with roomId
               registeredVideoElement = registerRoomAndStream({
-                localStream: stream,
+                localStream: localStream,
                 roomId,
                 destroyPeers: true
               });
