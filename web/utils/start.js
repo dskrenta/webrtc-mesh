@@ -10,7 +10,8 @@ export default async function start({
   remoteVideoContainer,
   localVideoContainer,
   localVideoElement,
-  roomId
+  roomId,
+  switchMainVideoElementSource
 }) {
   try {
     // Get ice servers from server
@@ -30,6 +31,9 @@ export default async function start({
 
     // Current room
     let currentRoom = null;
+
+    let localPeers = {};
+
 
     // Creates a video element, sets a mediastream as it's source, and appends it to the DOM
     function createVideoElement(container, mediaStream, muted=false) {
@@ -63,6 +67,13 @@ export default async function start({
         smallVideoClickHandler({
           element: videoElement
         });
+
+        // Switch main video element source to new remote stream
+        switchMainVideoElementSource({
+          element: videoElement,
+          srcObject: remoteStream,
+          mute: false
+        })
 
         // On close
         peer.on('close', () => {
@@ -110,7 +121,7 @@ export default async function start({
         if (LOGS) console.log('onRoomPeers', discoveryData);
 
         // Discovery data is for from correct room
-        if (discoveryData.roomResponse == roomId) {
+        if (discoveryData.roomResponse === roomId) {
           if (LOGS) console.log(discoveryData);
 
           // Remove onRoomPeers from discover listener
@@ -123,6 +134,63 @@ export default async function start({
 
       // Register onRoomPeers on discover
       signalClient.addListener('discover', onRoomPeers);
+    }
+
+    function registerRoomAndStream({
+      localStream,
+      roomId,
+      destroyPeers = false
+    }) {
+      // Destroy all peers if destroyPeers is true
+      if (localStream && roomId) {
+        if (destroyPeers) {
+          signalClient.peers().forEach(peer => {
+            peer.destroy();
+          });
+        }
+
+        // Create new video element with local stream
+        const videoElement = createVideoElement(localVideoContainer, localStream, true);
+
+        // Set style to indicate this is local video
+        videoElement.classList.add('smallVideoActive');
+
+        // Register click handler
+        smallVideoClickHandler({
+          element: videoElement,
+          stream: localStream,
+          mute: true
+        });
+
+        // Set local video element to local stream
+        localVideoElement.srcObject = localStream;
+
+        // Mute local video
+        localVideoElement.muted = true;
+
+        // Play local video element
+        localVideoElement.play();
+
+        // Accept request on request and register peer
+        signalClient.on('request', async (request) => {
+          const { peer } = await request.accept();
+          onPeer(peer, localStream);
+        });
+
+        // Join room
+        joinRoom(roomId, localStream);
+
+        // Destory all peers on before page unload
+        window.addEventListener('beforeunload', () => {
+          signalClient.peers().forEach(peer => {
+            peer.destroy();
+          });
+        });
+
+        return videoElement;
+      }
+
+      return null;
     }
 
     // Local stream
@@ -142,63 +210,25 @@ export default async function start({
       console.error('getUserMedia error', error);
     }
 
-    // If local stream is defined
-    if (localStream) {
-      const localStreamMerger = new VideoStreamMerger();
-      localStreamMerger.start();
-      localStreamMerger.addStream(localStream);
+    // Register room and local stream
+    let registeredVideoElement = registerRoomAndStream({
+      localStream,
+      roomId
+    });
 
-      // Display local video
-      // const videoElement = createVideoElement(localVideoContainer, localStream, true);
-      const videoElement = createVideoElement(localVideoContainer, localStreamMerger.result, true);
-
-      // Set style to indicate this is local video
-      videoElement.classList.add('smallVideoActive');
-
-      // Register click handler
-      smallVideoClickHandler({
-        element: videoElement,
-        // stream: localStream,
-        stream: localStreamMerger.result,
-        mute: true
-      });
-
-      // Set local video element to local stream
-      // localVideoElement.srcObject = localStream;
-      localVideoElement.srcObject = localStreamMerger.result;
-
-      // Mute local video
-      localVideoElement.muted = true;
-
-      // Play local video element
-      localVideoElement.play();
-
-      // Accept request on request and register peer
-      signalClient.on('request', async (request) => {
-        const { peer } = await request.accept();
-        // onPeer(peer, localStream);
-        onPeer(peer, localStreamMerger.result);
-      });
-
-      // Join room
-      // joinRoom(roomId, localStream);
-      joinRoom(roomId, localStreamMerger.result);
-
-      // Destory all peers on before page unload
-      window.addEventListener('beforeunload', () => {
-        signalClient.peers().forEach(peer => {
-          peer.destroy();
-        });
-      })
-
+    if (registeredVideoElement) {
       return {
         toggleFlipVideo: async () => {
           try {
             const isMobile = window.matchMedia('(max-width: 420px)').matches;
             const flipButton = document.getElementById('flipButton');
 
+            // Only triggle on mobile
             if (localStream && isMobile && flipButton) {
+              // Get current flip button mode
               const mode = flipButton.value;
+
+              // Toggle previous flip button value to get new mode
               const newMode = mode === 'user'
                 ? 'environment'
                 : 'user';
@@ -206,8 +236,18 @@ export default async function start({
               // Toggle flip button value
               flipButton.value = newMode;
 
-              // Get new stream from getUserMedia and add stream to localStreamMerger
-              localStreamMerger.addStream(await window.navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: newMode } }));
+              // Get media stream with new facingMode
+              const stream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: newMode } });
+
+              // Remove current registered video element from local video container
+              localVideoContainer.removeChild(registeredVideoElement);
+
+              // Register new stream with roomId
+              registeredVideoElement = registerRoomAndStream({
+                localStream: stream,
+                roomId,
+                destroyPeers: true
+              });
             }
           }
           catch (error) {
