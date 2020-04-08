@@ -14,6 +14,10 @@ export default async function start({
   switchMainVideoElementSource
 }) {
   try {
+    // Audio context
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
     // Get ice servers from server
     const iceServers = await api({
       request: 'getIceServers',
@@ -67,19 +71,28 @@ export default async function start({
       // On stream
       peer.on('stream', remoteStream => {
         // Create video element and append to remote video container
-        const videoElement = createVideoElement(remoteVideoContainer, remoteStream);
+        const videoElement = createVideoElement(remoteVideoContainer, remoteStream, true);
 
         // Register click handler
         smallVideoClickHandler({
-          element: videoElement
+          element: videoElement,
+          // mute: false
+          mute: true
         });
 
         // Switch main video element source to new remote stream
         switchMainVideoElementSource({
           element: videoElement,
           srcObject: remoteStream,
-          mute: false
+          // mute: false
+          mute: true
         });
+
+        // Get audio source from remote stream
+        const audioSource = audioCtx.createMediaStreamSource(remoteStream);
+
+        // Connect audio source to audio context destination
+        audioSource.connect(audioCtx.destination);
 
         // On close
         peer.on('close', () => {
