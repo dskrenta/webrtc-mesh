@@ -95,46 +95,31 @@ const Chat = {
       mute = false
     }) {
       element.addEventListener('click', () => {
-        const oldSourceElement = document.getElementById('mainVideo');
-
-        oldSourceElement.srcObject = srcObject ? srcObject : element.srcObject;
-
-        oldSourceElement.muted = mute;
-
-        oldSourceElement.play();
-
-        clearActiveClass();
-        element.classList.add('smallVideoActive');
+        switchMainVideoElementSource({
+          element,
+          srcObject,
+          mute
+        })
       });
     }
 
-    /* participants menu
+    function switchMainVideoElementSource({
+      element,
+      srcObject = false,
+      mute = false
+    }) {
+      const oldSourceElement = document.getElementById('mainVideo');
 
-    <!--button id="peopleButton" class="control" value="on">
-      <img src="/static/images/group.png" alt="" class="controlIcon" />
-      <span>6 People</span>
-    </button-->
+      oldSourceElement.srcObject = srcObject ? srcObject : element.srcObject;
 
-    document.getElementById('peopleButton').addEventListener('click', () => {
-      if (menu.style.width === 0 || menu.style.width === '0px') {
-        openSideMenu(/*html* /`
-          <div class="sideMenuInvite">
-            <h2 class="sideMenuTitle">6 People are here</h2>
-            <ul class="sideMenuList">
-              <li class="sideMenuPerson">Harvey Dent</li>
-              <li class="sideMenuPerson">Bruce Wayne</li>
-              <li class="sideMenuPerson">Harvey Dent</li>
-              <li class="sideMenuPerson">Bruce Wayne</li>
-              <li class="sideMenuPerson">Harvey Dent</li>
-              <li class="sideMenuPerson">Bruce Wayne</li>
-            </ul>
-          </div>
-        `);
-      }
-      else {
-        closeSideMenu();
-      }
-    });*/
+      oldSourceElement.muted = mute;
+
+      oldSourceElement.play();
+
+      clearActiveClass();
+
+      element.classList.add('smallVideoActive');
+    }
 
     // go modal
     const goModal = document.getElementById('goModalContainer');
@@ -142,11 +127,6 @@ const Chat = {
       goModal.style.display = 'none';
       beginChat();
     });
-    /*
-    document.getElementById('goModalBackground').addEventListener('click', () => {
-      goModal.style.display = 'none';
-    });
-    */
 
     // invite menu
     document.getElementById('inviteButton').addEventListener('click', () => {
@@ -187,6 +167,7 @@ const Chat = {
           remoteVideoContainer: document.getElementById('videoList'),
           localVideoElement: document.getElementById('mainVideo'),
           roomId,
+          switchMainVideoElementSource
         });
 
         // Toggle camera flip
