@@ -14,6 +14,9 @@ export default async function start({
   switchMainVideoElementSource
 }) {
   try {
+    // Is mobile
+    const isMobile = window.matchMedia('(max-width: 420px)').matches;
+
     // Get ice servers from server
     const iceServers = await api({
       request: 'getIceServers',
@@ -33,12 +36,18 @@ export default async function start({
     let currentRoom = null;
 
     // Creates a video element, sets a mediastream as it's source, and appends it to the DOM
-    function createVideoElement(container, mediaStream, muted=false) {
+    function createVideoElement({
+      container,
+      mediaStream,
+      muted = false,
+      controls = false
+    }) {
       const videoElement = document.createElement('video');
       videoElement.autoplay = true;
       videoElement.playsInline = true;
       videoElement.srcObject = mediaStream;
       videoElement.muted = muted;
+      videoElement.controls = controls;
       videoElement.classList.add('smallVideo');
       container.appendChild(videoElement);
 
@@ -67,7 +76,11 @@ export default async function start({
       // On stream
       peer.on('stream', remoteStream => {
         // Create video element and append to remote video container
-        const videoElement = createVideoElement(remoteVideoContainer, remoteStream);
+        const videoElement = createVideoElement({
+          container: remoteVideoContainer,
+          mediaStream: remoteStream,
+          controls: isMobile
+        });
 
         // Play small video element
         videoElement.play();
@@ -179,7 +192,11 @@ export default async function start({
         }
 
         // Create new video element with local stream
-        const videoElement = createVideoElement(localVideoContainer, localStream, true);
+        const videoElement = createVideoElement({
+          container: localVideoContainer,
+          mediaStream: localStream,
+          muted: true
+        });
 
         // Set style to indicate this is local video
         videoElement.classList.add('smallVideoActive');
