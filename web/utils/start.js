@@ -69,6 +69,9 @@ export default async function start({
         // Create video element and append to remote video container
         const videoElement = createVideoElement(remoteVideoContainer, remoteStream);
 
+        // Play small video element
+        videoElement.play();
+
         // Register click handler
         smallVideoClickHandler({
           element: videoElement
