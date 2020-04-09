@@ -218,7 +218,7 @@ const Chat = {
         });
       }
       catch (error) {
-        alert('Begin chat error');
+        alert('Begin chat error', error);
         console.error('beginChat error', error);
       }
     }

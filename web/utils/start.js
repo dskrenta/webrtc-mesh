@@ -36,13 +36,25 @@ export default async function start({
     // Current room
     let currentRoom = null;
 
+    function removeAudioTrackFromStream(mediaStream) {
+      const returnMediaStream = mediaStream.clone();
+      const audioTrack = returnMediaStream.getAudioTracks();
+
+      if (audioTrack.length > 0) {
+        returnMediaStream.removeTrack(audioTrack[0]);
+      }
+
+      return returnMediaStream;
+    }
+
     // Creates a video element, sets a mediastream as it's source, and appends it to the DOM
     function createVideoElement(container, mediaStream, muted=false) {
       const videoElement = document.createElement('video');
+      videoElement.muted = muted;
       videoElement.autoplay = true;
       videoElement.playsInline = true;
-      videoElement.srcObject = mediaStream;
-      videoElement.muted = muted;
+      // videoElement.srcObject = mediaStream;
+      videoElement.srcObject = removeAudioTrackFromStream(mediaStream)
       videoElement.classList.add('smallVideo');
       container.appendChild(videoElement);
 
@@ -50,6 +62,8 @@ export default async function start({
       enableInlineVideo(videoElement, {
         everywhere: /iPhone|iPad|iPod/i.test(navigator.userAgent)
       });
+
+      videoElement.play();
 
       return videoElement;
     }
@@ -83,13 +97,16 @@ export default async function start({
         // Switch main video element source to new remote stream
         switchMainVideoElementSource({
           element: videoElement,
-          srcObject: remoteStream,
+          // srcObject: remoteStream,
+          srcObject: removeAudioTrackFromStream(remoteStream),
           // mute: false
           mute: true
         });
 
         // Get audio source from remote stream
         const audioSource = audioCtx.createMediaStreamSource(remoteStream);
+
+        console.log(audioSource);
 
         // Connect audio source to audio context destination
         audioSource.connect(audioCtx.destination);
@@ -115,7 +132,8 @@ export default async function start({
           // Switch main video element source to local stream
           switchMainVideoElementSource({
             element: registeredVideoElement,
-            srcObject: localStream,
+            // srcObject: localStream,
+            srcObject: removeAudioTrackFromStream(localStream),
             mute: true
           });
         })
@@ -202,7 +220,8 @@ export default async function start({
         });
 
         // Set local video element to local stream
-        localVideoElement.srcObject = localStream;
+        // localVideoElement.srcObject = localStream;
+        localVideoElement.srcObject = removeAudioTrackFromStream(localStream);
 
         // Mute local video
         localVideoElement.muted = true;
