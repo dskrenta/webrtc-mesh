@@ -14,6 +14,10 @@ export default async function start({
   switchMainVideoElementSource
 }) {
   try {
+    // Audio context
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
     // Is mobile
     const isMobile = window.matchMedia('(max-width: 420px)').matches;
 
@@ -79,7 +83,8 @@ export default async function start({
         const videoElement = createVideoElement({
           container: remoteVideoContainer,
           mediaStream: remoteStream,
-          controls: isMobile
+          controls: isMobile,
+          muted: isMobile
         });
 
         // Play small video element
@@ -94,8 +99,16 @@ export default async function start({
         switchMainVideoElementSource({
           element: videoElement,
           srcObject: remoteStream,
-          mute: false
+          mute: isMobile
         });
+
+        if (isMobile) {
+          // Get audio source from remote stream
+          const audioSource = audioCtx.createMediaStreamSource(remoteStream);
+
+          // Connect audio source to audio context destination
+          audioSource.connect(audioCtx.destination);
+        }
 
         // On close
         peer.on('close', () => {
