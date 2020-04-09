@@ -195,7 +195,8 @@ export default async function start({
         const videoElement = createVideoElement({
           container: localVideoContainer,
           mediaStream: localStream,
-          muted: true
+          muted: true,
+          controls: isMobile
         });
 
         // Set style to indicate this is local video
