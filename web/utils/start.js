@@ -110,18 +110,7 @@ export default async function start({
           audioSource.connect(audioCtx.destination);
         }
 
-        // On close
-        peer.on('close', () => {
-          // Remove video element from remote video container
-          removeChild({
-            parent: remoteVideoContainer,
-            child: videoElement
-          })
-        });
-
-        peer.on('error', (error) => {
-          if (LOGS) console.error('Peer error', error);
-
+        function cleanPeer() {
           // Remove video element from remote video container
           removeChild({
             parent: remoteVideoContainer,
@@ -134,7 +123,18 @@ export default async function start({
             srcObject: localStream,
             mute: true
           });
-        })
+        }
+
+        // On close
+        peer.on('close', () => {
+          cleanPeer();
+        });
+
+        peer.on('error', (error) => {
+          if (LOGS) console.error('Peer error', error);
+
+          cleanPeer();
+        });
       });
     }
 
@@ -169,7 +169,7 @@ export default async function start({
       if (LOGS) console.log('requesting to join', roomId);
 
       // Discover room
-      signalClient.discover(roomId);
+      signalClient.discover({ roomId });
 
       // Get the peers in this room
       function onRoomPeers(discoveryData) {

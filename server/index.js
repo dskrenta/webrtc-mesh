@@ -12,7 +12,6 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const signalServer = require('simple-signal-server')(io);
-const path = require('path');
 const twilioClient = require('twilio')(process.env.twilioAccountSid, process.env.twilioAuthToken);
 
 // Internal utility imports
@@ -31,26 +30,31 @@ const PORT = process.env.PORT || SERVER_PORT;
 app.use(cors());
 
 // Serve web on /static
-app.use('/static', express.static(`${__dirname}/../web`));
+// app.use('/static', express.static(`${__dirname}/../web`));
+app.use(express.static(`${__dirname}/../web`));
 
 // Rooms
 const rooms = {};
 
 // Peer discovery
 signalServer.on('discover', request => {
-  const roomId = request.discoveryData;
+  const roomId = request.discoveryData.roomId;
+  const publicRoom = request.discoveryData.publicRoom || false;
   const peerId = request.socket.id;
 
   if (!(roomId in rooms)) {
-    rooms[roomId] = new Set();
+    rooms[roomId] = {
+      peers: new Set(),
+      publicRoom
+    };
   }
 
-  rooms[roomId].add(peerId);
+  rooms[roomId].peers.add(peerId);
   request.socket.roomId = roomId;
 
   request.discover(peerId, {
     roomResponse: roomId,
-    peers: Array.from(rooms[roomId]).filter(currentPeerId => currentPeerId !== peerId)
+    peers: Array.from(rooms[roomId].peers).filter(currentPeerId => currentPeerId !== peerId)
   });
 
   if(LOGS) console.log(peerId, 'joined', roomId);
@@ -62,7 +66,11 @@ signalServer.on('disconnect', socket => {
   const roomId = socket.roomId;
 
   if (roomId in rooms) {
-    rooms[roomId].delete(peerId);
+    rooms[roomId].peers.delete(peerId);
+
+    if (rooms[roomId].peers.size === 0) {
+      delete rooms[roomId];
+    }
 
     if (LOGS) console.log(peerId, 'left', roomId);
   }
@@ -83,11 +91,20 @@ io.on('connection', (socket) => {
 
   // Resolvers
   generateResolver('getIceServers', iceServersResolver);
+  generateResolver('getRooms', async ({ socket }) => {
+    socket.emit(
+      'getRoomsResponse',
+      Object.keys(rooms)
+        .filter(roomId => rooms[roomId].publicRoom === true)
+        .map(roomId => {
+          return {
+            roomId,
+            numParticipants: rooms[roomId].peers.size
+          };
+        })
+    )
+  });
 });
-
-// Serve web/index.html on path '/' and '/index.html'
-app.get('/', (req, res) => res.sendFile(path.resolve(`${__dirname}/../web/index.html`)));
-app.get('/index.html', (req, res) => res.sendFile(path.resolve(`${__dirname}/../web/index.html`)));
 
 // Start server
 server.listen(

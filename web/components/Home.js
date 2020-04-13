@@ -25,8 +25,8 @@ const Home = {
             </button>
           </form>
         </div>
-        <img 
-          src="/static/images/videocall.svg"
+        <img
+          src="/images/videocall.svg"
           class="landingImage"
           alt=""
         />

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover, maximum-scale=1">
     <meta name="theme-color" content="#000000">
     <title>WebRTC-Mesh</title>
-    <link rel="stylesheet" href="/static/css/index.css" type="text/css" />
-    <link rel="stylesheet" href="/static/css/chat.css" type="text/css" />
+    <link rel="stylesheet" href="/css/index.css" type="text/css" />
+    <link rel="stylesheet" href="/css/chat.css" type="text/css" />
   </head>
   <body>
     <noscript>
@@ -15,22 +15,22 @@
     <div id="app-body"></div>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-    <script type="text/javascript" src="/static/lib/simplepeer.min.js"></script>
-    <script type="text/javascript" src="/static/lib/simple-signal-client.min.js"></script>
-    <script type="text/javascript" src="/static/lib/iphone-inline-video.min.js"></script>
+    <script type="text/javascript" src="/lib/simplepeer.min.js"></script>
+    <script type="text/javascript" src="/lib/simple-signal-client.min.js"></script>
+    <script type="text/javascript" src="/lib/iphone-inline-video.min.js"></script>
 
     <script type="module">
       'use strict';
 
-      import { init } from '/static/lib/spa.js';
+      import { init } from '/lib/spa.js';
 
-      import Home from '/static/components/Home.js';
-      import Chat from '/static/components/Chat.js';
-      import Privacy from '/static/components/Privacy.js';
-      import Terms from '/static/components/Terms.js';
+      import Home from '/components/Home.js';
+      import Chat from '/components/Chat.js';
+      import Privacy from '/components/Privacy.js';
+      import Terms from '/components/Terms.js';
 
       // Register socket.io
-      window.socket = io('https://howlix.com');
+      window.socket = io(window.location.href.includes('localhost') ? 'http://localhost:3000' : 'https://api.howlix.com');
 
       init({
         views: {
