@@ -1,6 +1,6 @@
 'use strict';
 
-// If development use environment variables from blazebuddies/.env
+// If development use environment variables from .env
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config({path: `${__dirname}/../.env`});
 }
